@@ -1,14 +1,36 @@
 package com.example.samba.freeBSD;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.samba.R;
+import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
+import com.hierynomus.smbj.SMBClient;
+import com.hierynomus.smbj.SmbConfig;
+import com.hierynomus.smbj.auth.AuthenticationContext;
+import com.hierynomus.smbj.connection.Connection;
+import com.hierynomus.smbj.session.Session;
+import com.hierynomus.smbj.share.DiskShare;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Date;
+import java.util.TreeMap;
+
+import jcifs.UniAddress;
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
+import jcifs.smb.SmbSession;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,32 +41,20 @@ public class FilesFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
+    private String usuario;
+    private String passwd;
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public FilesFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FilesFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static FilesFragment newInstance(String param1, String param2) {
         FilesFragment fragment = new FilesFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -52,8 +62,8 @@ public class FilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            usuario = getArguments().getString("usr");
+            passwd = getArguments().getString("passwd");
         }
     }
 
@@ -61,6 +71,41 @@ public class FilesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_files, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_files, container, false);
+        Log.d("Recivido", " " + usuario);
+        Log.d("Recivido", " " + passwd);
+        new SmbaFiles().execute();
+        return rootView;
+    }
+
+    private class SmbaFiles extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try{
+                SMBClient client = new SMBClient(SmbConfig.createDefaultConfig());
+                Connection c = client.connect("10.0.0.1");
+                Session s = c.authenticate(new AuthenticationContext(usuario, passwd.toCharArray(), ""));
+                DiskShare share = (DiskShare) s.connectShare("freebsd_compartido");
+                for (FileIdBothDirectoryInformation f : share.list(null)) {
+                    Log.d("File", " " + f.getFileName());
+                }
+                /*String url = "smb://192.168.1.92/";
+                NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(
+                        null, usuario, passwd);
+                SmbFile sfile = new SmbFile("smb://10.0.0.1/freebsd_compartido/", auth);
+                SmbFile[] files = sfile.listFiles();
+                for(int i=0; i<=files.length; i ++){
+                    String fileName = files[i].getName();
+                    String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+                    Log.d("Folders"," " + fileName + "\n");
+                }*/
+            }catch(SmbException | MalformedURLException e){
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 }
