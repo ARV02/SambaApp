@@ -12,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".freeBSD.FreeBSD"></activity>
+        <activity android:name=".fedora.FedoraActivity"></activity>
+        <activity android:name=".solaris.SolarisActivity" />
+        <activity android:name=".freeBSD.FreeBSD" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
