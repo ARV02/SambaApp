@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.samba.R;
@@ -23,6 +25,7 @@ import com.hierynomus.smbj.share.DiskShare;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TreeMap;
 
@@ -44,6 +47,9 @@ public class FilesFragment extends Fragment {
 
     private String usuario;
     private String passwd;
+    private ListView listView;
+    private ArrayAdapter adapter;
+    private ArrayList<Object> list;
 
     // TODO: Rename and change types of parameters
 
@@ -72,6 +78,7 @@ public class FilesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_files, container, false);
+        listView = rootView.findViewById(R.id.files);
         Log.d("Recivido", " " + usuario);
         Log.d("Recivido", " " + passwd);
         new SmbaFiles().execute();
@@ -87,15 +94,26 @@ public class FilesFragment extends Fragment {
                 Connection c = client.connect("10.0.0.1");
                 Session s = c.authenticate(new AuthenticationContext(usuario, passwd.toCharArray(), ""));
                 DiskShare share = (DiskShare) s.connectShare("freebsd_compartido");
+                list = new ArrayList<>();
+                adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
                     Log.d("File", " " + f.getFileName());
+                    list.add(f.getFileName());
                 }
+                Log.d("Array", " " + list);
             }catch(SmbException | MalformedURLException e){
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            listView.setAdapter(adapter);
+            Log.d("List", " " + listView);
         }
     }
 }
