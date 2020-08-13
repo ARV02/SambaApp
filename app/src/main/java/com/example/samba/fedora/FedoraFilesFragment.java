@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.samba.R;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
@@ -21,6 +23,7 @@ import com.hierynomus.smbj.share.DiskShare;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 
 import jcifs.smb.SmbException;
 
@@ -32,6 +35,9 @@ import jcifs.smb.SmbException;
 public class FedoraFilesFragment extends Fragment {
     private String usuario;
     private String passwd;
+    private ListView listView;
+    private ArrayAdapter adapter;
+    private ArrayList<Object> list;
 
     public FedoraFilesFragment() {
         // Required empty public constructor
@@ -57,6 +63,7 @@ public class FedoraFilesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_fedora_files, container, false);
+        listView = rootView.findViewById(R.id.file2);
         Log.d("Recivido", " " + usuario);
         Log.d("Recivido", " " + passwd);
         new FedoraFilesFragment.SmbaFiles().execute();
@@ -72,9 +79,13 @@ public class FedoraFilesFragment extends Fragment {
                 Connection c = client.connect("10.0.0.7");
                 Session s = c.authenticate(new AuthenticationContext(usuario, passwd.toCharArray(), ""));
                 DiskShare share = (DiskShare) s.connectShare("compartido_centos");
+                list = new ArrayList<>();
+                adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
                     Log.d("File", " " + f.getFileName());
+                    list.add(f.getFileName());
                 }
+                Log.d("Array", " " + list);
             }catch(SmbException | MalformedURLException e){
                 e.printStackTrace();
             } catch (IOException e) {
@@ -82,5 +93,12 @@ public class FedoraFilesFragment extends Fragment {
             }
             return null;
         }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            listView.setAdapter(adapter);
+            Log.d("List", " " + listView);
+        }
     }
+
 }
