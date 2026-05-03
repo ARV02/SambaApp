@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.samba.R;
-import com.example.samba.freeBSD.FilesFragment;
 
 /**
  * A simple {@link Fragment} subclass.

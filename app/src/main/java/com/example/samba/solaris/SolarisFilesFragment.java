@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.samba.R;
-import com.example.samba.freeBSD.FilesFragment;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.SmbConfig;
@@ -68,8 +66,6 @@ public class SolarisFilesFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_solaris_files, container, false);
         listView = rootView.findViewById(R.id.file3);
-        Log.d("Recivido", " " + usuario);
-        Log.d("Recivido", " " + passwd);
         new SolarisFilesFragment.SmbaFiles().execute();
         return rootView;
     }
@@ -86,10 +82,8 @@ public class SolarisFilesFragment extends Fragment {
                 list = new ArrayList<>();
                 adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
-                    Log.d("File", " " + f.getFileName());
                     list.add(f.getFileName());
                 }
-                Log.d("Array", " " + list);
             }catch(SmbException | MalformedURLException e){
                 e.printStackTrace();
             } catch (IOException e) {
@@ -101,7 +95,6 @@ public class SolarisFilesFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             listView.setAdapter(adapter);
-            Log.d("List", " " + listView);
         }
     }
 }

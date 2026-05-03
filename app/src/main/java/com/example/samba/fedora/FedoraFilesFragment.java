@@ -64,8 +64,6 @@ public class FedoraFilesFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_fedora_files, container, false);
         listView = rootView.findViewById(R.id.file2);
-        Log.d("Recivido", " " + usuario);
-        Log.d("Recivido", " " + passwd);
         new FedoraFilesFragment.SmbaFiles().execute();
         return rootView;
     }
@@ -82,7 +80,6 @@ public class FedoraFilesFragment extends Fragment {
                 list = new ArrayList<>();
                 adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
-                    Log.d("File", " " + f.getFileName());
                     list.add(f.getFileName());
                 }
                 Log.d("Array", " " + list);
@@ -97,7 +94,6 @@ public class FedoraFilesFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             listView.setAdapter(adapter);
-            Log.d("List", " " + listView);
         }
     }
 
