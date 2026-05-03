@@ -5,14 +5,12 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.samba.R;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
@@ -26,14 +24,8 @@ import com.hierynomus.smbj.share.DiskShare;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.TreeMap;
 
-import jcifs.UniAddress;
-import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-import jcifs.smb.SmbSession;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,8 +71,6 @@ public class FilesFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_files, container, false);
         listView = rootView.findViewById(R.id.files);
-        Log.d("Recivido", " " + usuario);
-        Log.d("Recivido", " " + passwd);
         new SmbaFiles().execute();
         return rootView;
     }
