@@ -16,6 +16,7 @@ import android.widget.ListView;
 
 import com.example.samba.R;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
+import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.SmbConfig;
 import com.hierynomus.smbj.auth.AuthenticationContext;
@@ -24,10 +25,7 @@ import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-
-import jcifs.smb.SmbException;
 
 public class SolarisFilesFragment extends Fragment {
 
@@ -72,17 +70,21 @@ public class SolarisFilesFragment extends Fragment {
         protected Void doInBackground(Void... voids) {
             try{
                 SMBClient client = new SMBClient(SmbConfig.createDefaultConfig());
+                // TODO: Move host to a configurable SMB connection profile.
                 Connection c = client.connect("10.0.0.5");
                 Session s = c.authenticate(new AuthenticationContext(usuario, passwd.toCharArray(), ""));
+                // TODO: Move share name to a configurable SMB connection profile.
                 DiskShare share = (DiskShare) s.connectShare("compartido_solaris");
                 list = new ArrayList<>();
                 adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
                     list.add(f.getFileName());
                 }
-            }catch(SmbException | MalformedURLException e){
+            } catch (SMBApiException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
