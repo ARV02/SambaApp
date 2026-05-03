@@ -1,5 +1,11 @@
 # SambaApp
 
+![Android](https://img.shields.io/badge/Platform-Android-green)
+![Java](https://img.shields.io/badge/Legacy-Java-orange)
+![Kotlin](https://img.shields.io/badge/Modernization-Kotlin-blue)
+![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-purple)
+![Status](https://img.shields.io/badge/Status-In%20Modernization-yellow)
+
 Legacy Android application built in Java in 2020 as a university project to connect Android devices to shared folders using SMB/Samba.
 
 This project is currently being revived and modernized as part of my personal Android lab. The goal is to evolve an old Java/XML Android app into a modern Android project using Kotlin, Jetpack Compose, better architecture, and current Android development practices.
