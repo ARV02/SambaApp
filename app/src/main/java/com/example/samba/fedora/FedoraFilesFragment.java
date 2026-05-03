@@ -1,5 +1,8 @@
 package com.example.samba.fedora;
 
+import static com.example.samba.utils.Constants.PASSWORD;
+import static com.example.samba.utils.Constants.USER;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -27,11 +30,6 @@ import java.util.ArrayList;
 
 import jcifs.smb.SmbException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FedoraFilesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FedoraFilesFragment extends Fragment {
     private String usuario;
     private String passwd;
@@ -53,8 +51,8 @@ public class FedoraFilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            usuario = getArguments().getString("usrf");
-            passwd = getArguments().getString("passwdf");
+            usuario = getArguments().getString(USER);
+            passwd = getArguments().getString(PASSWORD);
         }
     }
 

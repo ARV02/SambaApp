@@ -1,5 +1,8 @@
 package com.example.samba.solaris;
 
+import static com.example.samba.utils.Constants.PASSWORD;
+import static com.example.samba.utils.Constants.USER;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -26,15 +29,8 @@ import java.util.ArrayList;
 
 import jcifs.smb.SmbException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SolarisFilesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SolarisFilesFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private String usuario;
     private String passwd;
     private ListView listView;
@@ -55,8 +51,8 @@ public class SolarisFilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            usuario = getArguments().getString("usrs");
-            passwd = getArguments().getString("passwds");
+            usuario = getArguments().getString(USER);
+            passwd = getArguments().getString(PASSWORD);
         }
     }
 

@@ -1,5 +1,8 @@
 package com.example.samba.solaris;
 
+import static com.example.samba.utils.Constants.PASSWORD;
+import static com.example.samba.utils.Constants.USER;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,11 +15,6 @@ import android.widget.EditText;
 
 import com.example.samba.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SolarisDataFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SolarisDataFragment extends Fragment {
     private EditText usuari2, contra2;
     private Button aceptar2;
@@ -56,8 +54,8 @@ public class SolarisDataFragment extends Fragment {
                 SolarisFilesFragment files = new SolarisFilesFragment();
                 String usu = usuari2.getText().toString();
                 String pass = contra2.getText().toString();
-                enviar2.putString("usrs", usu);
-                enviar2.putString("passwds", pass);
+                enviar2.putString(USER, usu);
+                enviar2.putString(PASSWORD, pass);
                 files.setArguments(enviar2);
                 getFragmentManager().beginTransaction().replace(R.id.container2, files).commit();
             }

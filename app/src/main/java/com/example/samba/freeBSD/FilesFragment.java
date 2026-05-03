@@ -1,5 +1,8 @@
 package com.example.samba.freeBSD;
 
+import static com.example.samba.utils.Constants.PASSWORD;
+import static com.example.samba.utils.Constants.USER;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -27,15 +30,7 @@ import java.util.ArrayList;
 
 import jcifs.smb.SmbException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FilesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FilesFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private String usuario;
     private String passwd;
@@ -43,13 +38,10 @@ public class FilesFragment extends Fragment {
     private ArrayAdapter adapter;
     private ArrayList<Object> list;
 
-    // TODO: Rename and change types of parameters
-
     public FilesFragment() {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static FilesFragment newInstance(String param1, String param2) {
         FilesFragment fragment = new FilesFragment();
         Bundle args = new Bundle();
@@ -60,8 +52,8 @@ public class FilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            usuario = getArguments().getString("usr");
-            passwd = getArguments().getString("passwd");
+            usuario = getArguments().getString(USER);
+            passwd = getArguments().getString(PASSWORD);
         }
     }
 
@@ -87,10 +79,8 @@ public class FilesFragment extends Fragment {
                 list = new ArrayList<>();
                 adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
-                    Log.d("File", " " + f.getFileName());
                     list.add(f.getFileName());
                 }
-                Log.d("Array", " " + list);
             }catch(SmbException | MalformedURLException e){
                 e.printStackTrace();
             } catch (IOException e) {
@@ -106,6 +96,5 @@ public class FilesFragment extends Fragment {
             Log.d("List", " " + listView);
         }
     }
-
-
 }
+
