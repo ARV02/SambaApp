@@ -1,5 +1,8 @@
 package com.example.samba.freeBSD;
 
+import static com.example.samba.utils.Constants.PASSWORD;
+import static com.example.samba.utils.Constants.USER;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +37,8 @@ public class DataFragment extends Fragment {
                 FilesFragment files = new FilesFragment();
                 String usu = usuari.getText().toString();
                 String pass = contra.getText().toString();
-                enviar.putString("usr", usu);
-                enviar.putString("passwd", pass);
+                enviar.putString(USER, usu);
+                enviar.putString(PASSWORD, pass);
                 files.setArguments(enviar);
                 getFragmentManager().beginTransaction().replace(R.id.container, files).commit();
             }

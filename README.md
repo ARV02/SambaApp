@@ -116,6 +116,170 @@ The new version will focus on:
 
 ---
 
+## Roadmap
+
+This roadmap tracks the modernization process of SambaApp, from a legacy Java/XML Android project to a modern Android application using Kotlin, Jetpack Compose, better architecture, and safer SMB/Samba handling.
+
+---
+
+### v0.1.0 - Repository revival
+
+- [x] Update Gradle Wrapper
+- [x] Update Android Gradle Plugin
+- [x] Replace deprecated repositories with Maven Central
+- [x] Remove sensitive logs
+- [x] Add project README
+- [x] Add `.gitignore`
+- [x] Verify the project compiles successfully
+
+---
+
+### v0.2.0 - Legacy cleanup
+
+- [x] Add Kotlin support
+- [x] Add centralized Bundle key constants
+- [x] Clean unused imports
+- [x] Format legacy Java, Kotlin, and Gradle files
+- [x] Review AndroidManifest permissions
+- [x] Review deprecated or unused dependencies
+- [x] Remove unused legacy `jcifs` dependency/files if no longer required
+- [x] Document the current SMB/Samba flow
+- [x] Identify duplicated logic between FreeBSD, Solaris, and Fedora flows
+- [x] Mark hardcoded connection values for future refactoring
+
+---
+
+### v0.3.0 - Configurable SMB connections
+
+- [ ] Remove hardcoded IP addresses
+- [ ] Remove hardcoded share names
+- [ ] Add a connection profile model
+- [ ] Allow users to enter host, share name, username, and password
+- [ ] Add basic field validation
+- [ ] Keep optional presets for FreeBSD, Solaris, and Fedora
+
+---
+
+### v0.4.0 - SMB logic refactor
+
+- [ ] Move SMB/Samba connection logic out of Activities and Fragments
+- [ ] Create a reusable SMB repository
+- [ ] Unify file listing logic
+- [ ] Reduce duplicated code between operating system flows
+- [ ] Improve connection error handling
+
+---
+
+### v0.5.0 - Local testing environment
+
+- [ ] Add a local Samba test environment
+- [ ] Document how to test the app without the original virtual machines
+- [ ] Add sample shared folders and test credentials
+- [ ] Keep FreeBSD, Solaris, and Fedora as optional advanced test environments
+
+---
+
+### v0.6.0 - Kotlin migration
+
+- [ ] Migrate models to Kotlin
+- [ ] Migrate utility classes to Kotlin
+- [ ] Migrate SMB-related logic to Kotlin
+- [ ] Improve null safety
+- [ ] Keep the app compiling after each migration step
+
+---
+
+### v0.7.0 - Async modernization
+
+- [ ] Replace `AsyncTask` with coroutines
+- [ ] Run network operations on `Dispatchers.IO`
+- [ ] Add cancellable SMB operations
+- [ ] Improve loading, success, and error states
+
+---
+
+### v0.8.0 - MVVM architecture
+
+- [ ] Add ViewModels
+- [ ] Move UI state out of Fragments
+- [ ] Expose state using StateFlow or LiveData
+- [ ] Separate UI logic from business logic
+- [ ] Prepare the project for Compose migration
+
+---
+
+### v0.9.0 - Jetpack Compose migration
+
+- [ ] Add Jetpack Compose
+- [ ] Create a new connection screen with Compose
+- [ ] Add Material 3 components
+- [ ] Add loading and error states in the UI
+- [ ] Gradually replace XML screens
+
+---
+
+### v1.0.0 - Modern SMB file browser
+
+- [ ] Create a Compose-based file browser
+- [ ] Navigate through remote folders
+- [ ] Display files and folders with clear UI states
+- [ ] Refresh file lists
+- [ ] Show empty and error states
+- [ ] Add screenshots and demo GIF to the README
+
+---
+
+### v1.1.0 - Remote file operations
+
+- [ ] Create remote folders
+- [ ] Create remote files
+- [ ] Delete remote files
+- [ ] Delete empty folders
+- [ ] Add confirmation dialogs before destructive actions
+- [ ] Refresh the file list after each operation
+
+---
+
+### v1.2.0 - File transfers
+
+- [ ] Upload local files to SMB shared folders
+- [ ] Download remote files to the Android device
+- [ ] Show transfer progress
+- [ ] Support background transfers with WorkManager
+- [ ] Handle large files safely
+
+---
+
+### v1.3.0 - Security improvements
+
+- [ ] Add secure credential storage
+- [ ] Avoid storing plain text passwords
+- [ ] Clear passwords from memory when possible
+- [ ] Add connection profile validation
+- [ ] Add optional read-only mode
+
+---
+
+### v1.4.0 - Project quality
+
+- [ ] Add unit tests
+- [ ] Add GitHub Actions
+- [ ] Add static analysis
+- [ ] Add lint checks
+- [ ] Improve README documentation
+- [ ] Add architecture diagram
+
+---
+
+### v1.5.0 - Portfolio polish
+
+- [ ] Add screenshots
+- [ ] Add demo video or GIF
+- [ ] Add Before vs After section
+- [ ] Add release notes
+- [ ] Add GitHub topics
+- [ ] Prepare the repository as a featured GitHub project
+
 ## Tech stack
 
 ### Original stack

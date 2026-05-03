@@ -1,5 +1,8 @@
 package com.example.samba.fedora;
 
+import static com.example.samba.utils.Constants.PASSWORD;
+import static com.example.samba.utils.Constants.USER;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,11 +15,6 @@ import android.widget.EditText;
 
 import com.example.samba.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FedoraDataFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FedoraDataFragment extends Fragment {
     private EditText usuari3, contra3;
     private Button aceptar3;
@@ -53,8 +51,8 @@ public class FedoraDataFragment extends Fragment {
                 FedoraFilesFragment files = new FedoraFilesFragment();
                 String usu = usuari3.getText().toString();
                 String pass = contra3.getText().toString();
-                enviar3.putString("usrf", usu);
-                enviar3.putString("passwdf", pass);
+                enviar3.putString(USER, usu);
+                enviar3.putString(PASSWORD, pass);
                 files.setArguments(enviar3);
                 getFragmentManager().beginTransaction().replace(R.id.container3, files).commit();
             }
