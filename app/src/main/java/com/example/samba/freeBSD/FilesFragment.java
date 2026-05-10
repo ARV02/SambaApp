@@ -1,5 +1,6 @@
 package com.example.samba.freeBSD;
 
+import static com.example.samba.utils.Constants.CONNECTION_PROFILE;
 import static com.example.samba.utils.Constants.PASSWORD;
 import static com.example.samba.utils.Constants.USER;
 
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.samba.R;
+import com.example.samba.model.SmbConnectionProfile;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.SMBClient;
@@ -30,8 +32,8 @@ import java.util.ArrayList;
 
 public class FilesFragment extends Fragment {
 
-    private String usuario;
     private String passwd;
+    private SmbConnectionProfile connectionProfile;
     private ListView listView;
     private ArrayAdapter adapter;
     private ArrayList<Object> list;
@@ -50,7 +52,7 @@ public class FilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            usuario = getArguments().getString(USER);
+            connectionProfile = getArguments().getParcelable(CONNECTION_PROFILE);
             passwd = getArguments().getString(PASSWORD);
         }
     }
@@ -71,11 +73,11 @@ public class FilesFragment extends Fragment {
         protected Void doInBackground(Void... voids) {
             try{
                 SMBClient client = new SMBClient(SmbConfig.createDefaultConfig());
-                // TODO: Move host to a configurable SMB connection profile.
-                Connection c = client.connect("10.0.0.1");
-                Session s = c.authenticate(new AuthenticationContext(usuario, passwd.toCharArray(), ""));
-                // TODO: Move share name to a configurable SMB connection profile.
-                DiskShare share = (DiskShare) s.connectShare("freebsd_compartido");
+
+                Connection c = client.connect(connectionProfile.getHost());
+                Session s = c.authenticate(new AuthenticationContext(connectionProfile.getUsername(), passwd.toCharArray(), ""));
+
+                DiskShare share = (DiskShare) s.connectShare(connectionProfile.getShareName());
                 list = new ArrayList<>();
                 adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
@@ -95,7 +97,6 @@ public class FilesFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             listView.setAdapter(adapter);
-            Log.d("List", " " + listView);
         }
     }
 }

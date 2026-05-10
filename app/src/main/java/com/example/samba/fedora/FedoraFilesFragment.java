@@ -2,7 +2,6 @@ package com.example.samba.fedora;
 
 import static com.example.samba.utils.Constants.CONNECTION_PROFILE;
 import static com.example.samba.utils.Constants.PASSWORD;
-import static com.example.samba.utils.Constants.USER;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -73,10 +72,10 @@ public class FedoraFilesFragment extends Fragment {
         protected Void doInBackground(Void... voids) {
             try{
                 SMBClient client = new SMBClient(SmbConfig.createDefaultConfig());
-                // TODO: Move host to a configurable SMB connection profile.
+
                 Connection c = client.connect(connectionProfile.getHost());
                 Session s = c.authenticate(new AuthenticationContext(connectionProfile.getUsername(), passwd.toCharArray(), ""));
-                // TODO: Move share name to a configurable SMB connection profile.
+
                 DiskShare share = (DiskShare) s.connectShare(connectionProfile.getShareName());
                 list = new ArrayList<>();
                 adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
