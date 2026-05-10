@@ -2,13 +2,11 @@ package com.example.samba.fedora;
 
 import static com.example.samba.utils.Constants.CONNECTION_PROFILE;
 import static com.example.samba.utils.Constants.PASSWORD;
-import static com.example.samba.utils.Constants.USER;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

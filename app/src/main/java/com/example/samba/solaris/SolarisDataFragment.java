@@ -56,13 +56,13 @@ public class SolarisDataFragment extends Fragment {
             public void onClick(View view) {
                 SolarisFilesFragment files = new SolarisFilesFragment();
 
-                String usu = usuari2.getText().toString();
-                String pass = contra2.getText().toString();
+                String username = usuari2.getText().toString().trim();
+                String password = contra2.getText().toString();
                 String hostValue = host.getText().toString().trim();
                 String shareNameValue = sharedName.getText().toString().trim();
 
-                if (usu.isEmpty()
-                        || pass.isEmpty()
+                if (username.isEmpty()
+                        || password.isEmpty()
                         || hostValue.isEmpty()
                         || shareNameValue.isEmpty()) {
                     Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_LONG).show();
@@ -73,12 +73,12 @@ public class SolarisDataFragment extends Fragment {
                         "Solaris",
                         hostValue,
                         shareNameValue,
-                        usu
+                        username
                 );
 
                 Bundle bundle = new Bundle();
                 bundle.putParcelable(CONNECTION_PROFILE, connectionProfile);
-                bundle.putString(PASSWORD, pass);
+                bundle.putString(PASSWORD, password);
 
                 files.setArguments(bundle);
 

@@ -2,7 +2,6 @@ package com.example.samba.freeBSD;
 
 import static com.example.samba.utils.Constants.CONNECTION_PROFILE;
 import static com.example.samba.utils.Constants.PASSWORD;
-import static com.example.samba.utils.Constants.USER;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
