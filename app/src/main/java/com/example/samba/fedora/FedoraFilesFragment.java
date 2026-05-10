@@ -1,5 +1,6 @@
 package com.example.samba.fedora;
 
+import static com.example.samba.utils.Constants.CONNECTION_PROFILE;
 import static com.example.samba.utils.Constants.PASSWORD;
 import static com.example.samba.utils.Constants.USER;
 
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.samba.R;
+import com.example.samba.model.SmbConnectionProfile;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.SMBClient;
@@ -29,8 +31,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class FedoraFilesFragment extends Fragment {
-    private String usuario;
+
     private String passwd;
+    private SmbConnectionProfile connectionProfile;
     private ListView listView;
     private ArrayAdapter adapter;
     private ArrayList<Object> list;
@@ -49,7 +52,7 @@ public class FedoraFilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            usuario = getArguments().getString(USER);
+           connectionProfile = getArguments().getParcelable(CONNECTION_PROFILE);
             passwd = getArguments().getString(PASSWORD);
         }
     }
@@ -71,10 +74,10 @@ public class FedoraFilesFragment extends Fragment {
             try{
                 SMBClient client = new SMBClient(SmbConfig.createDefaultConfig());
                 // TODO: Move host to a configurable SMB connection profile.
-                Connection c = client.connect("10.0.0.7");
-                Session s = c.authenticate(new AuthenticationContext(usuario, passwd.toCharArray(), ""));
+                Connection c = client.connect(connectionProfile.getHost());
+                Session s = c.authenticate(new AuthenticationContext(connectionProfile.getUsername(), passwd.toCharArray(), ""));
                 // TODO: Move share name to a configurable SMB connection profile.
-                DiskShare share = (DiskShare) s.connectShare("compartido_centos");
+                DiskShare share = (DiskShare) s.connectShare(connectionProfile.getShareName());
                 list = new ArrayList<>();
                 adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
                 for (FileIdBothDirectoryInformation f : share.list(null)) {
