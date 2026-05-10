@@ -151,12 +151,12 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v0.3.0 - Configurable SMB connections
 
-- [ ] Remove hardcoded IP addresses
-- [ ] Remove hardcoded share names
-- [ ] Add a connection profile model
-- [ ] Allow users to enter host, share name, username, and password
-- [ ] Add basic field validation
-- [ ] Keep optional presets for FreeBSD, Solaris, and Fedora
+- [x] Remove hardcoded IP addresses
+- [x] Remove hardcoded share names
+- [x] Add a connection profile model
+- [x] Allow users to enter host, share name, username, and password
+- [x] Add basic field validation
+- [x] Keep optional presets for FreeBSD, Solaris, and Fedora
 
 ---
 
