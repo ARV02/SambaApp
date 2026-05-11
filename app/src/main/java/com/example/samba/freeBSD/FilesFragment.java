@@ -30,8 +30,6 @@ public class FilesFragment extends Fragment {
     private String passwd;
     private SmbConnectionProfile connectionProfile;
     private ListView listView;
-    private ArrayAdapter adapter;
-    private ArrayList<Object> list;
 
     private final SmbFileRepository repository = new SmbFileRepositoryImpl();
 
