@@ -162,11 +162,11 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v0.4.0 - SMB logic refactor
 
-- [ ] Move SMB/Samba connection logic out of Activities and Fragments
-- [ ] Create a reusable SMB repository
-- [ ] Unify file listing logic
-- [ ] Reduce duplicated code between operating system flows
-- [ ] Improve connection error handling
+- [x] Move SMB/Samba connection logic out of Activities and Fragments
+- [x] Create a reusable SMB repository
+- [x] Unify file listing logic
+- [x] Reduce duplicated code between operating system flows
+- [x] Improve connection error handling
 
 ---
 
