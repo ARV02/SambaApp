@@ -8,34 +8,30 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.samba.R;
+import com.example.samba.data.smb.SmbFileRepositoryImpl;
 import com.example.samba.model.SmbConnectionProfile;
-import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
-import com.hierynomus.mssmb2.SMBApiException;
-import com.hierynomus.smbj.SMBClient;
-import com.hierynomus.smbj.SmbConfig;
-import com.hierynomus.smbj.auth.AuthenticationContext;
-import com.hierynomus.smbj.connection.Connection;
-import com.hierynomus.smbj.session.Session;
-import com.hierynomus.smbj.share.DiskShare;
+import com.example.samba.domain.model.SmbFileItem;
+import com.example.samba.domain.model.SmbFileResult;
+import com.example.samba.domain.repository.SmbFileRepository;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FilesFragment extends Fragment {
 
     private String passwd;
     private SmbConnectionProfile connectionProfile;
     private ListView listView;
-    private ArrayAdapter adapter;
-    private ArrayList<Object> list;
+
+    private final SmbFileRepository repository = new SmbFileRepositoryImpl();
 
     public FilesFragment() {
         // Required empty public constructor
@@ -62,40 +58,47 @@ public class FilesFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_files, container, false);
         listView = rootView.findViewById(R.id.files);
-        new SmbaFiles().execute();
+        new ListFilesTask().execute();
         return rootView;
     }
 
-    private class SmbaFiles extends AsyncTask<Void, Void, Void>{
-
+    private class ListFilesTask extends AsyncTask<Void, Void, SmbFileResult<List<SmbFileItem>>> {
         @Override
-        protected Void doInBackground(Void... voids) {
-            try{
-                SMBClient client = new SMBClient(SmbConfig.createDefaultConfig());
-
-                Connection c = client.connect(connectionProfile.getHost());
-                Session s = c.authenticate(new AuthenticationContext(connectionProfile.getUsername(), passwd.toCharArray(), ""));
-
-                DiskShare share = (DiskShare) s.connectShare(connectionProfile.getShareName());
-                list = new ArrayList<>();
-                adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_expandable_list_item_1, list);
-                for (FileIdBothDirectoryInformation f : share.list(null)) {
-                    list.add(f.getFileName());
-                }
-            } catch (SMBApiException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
+        protected SmbFileResult<List<SmbFileItem>> doInBackground(Void... voids) {
+            return repository.listFiles(connectionProfile, passwd);
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            listView.setAdapter(adapter);
+        protected void onPostExecute(SmbFileResult<List<SmbFileItem>> listSmbFileResult) {
+            if (listSmbFileResult instanceof SmbFileResult.Success) {
+                List<SmbFileItem> files =
+                        ((SmbFileResult.Success<List<SmbFileItem>>) listSmbFileResult).getData();
+
+                List<String> fileNames = new ArrayList<>();
+
+                for (SmbFileItem file : files) {
+                    fileNames.add(file.getName());
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        requireContext(),
+                        android.R.layout.simple_list_item_1,
+                        fileNames
+                );
+
+                listView.setAdapter(adapter);
+                return;
+            }
+
+            if (listSmbFileResult instanceof SmbFileResult.Error) {
+                String message = ((SmbFileResult.Error) listSmbFileResult).getMessage();
+
+                Toast.makeText(
+                        requireContext(),
+                        message,
+                        Toast.LENGTH_LONG
+                ).show();
+            }
         }
     }
 }
