@@ -6,7 +6,7 @@ import com.example.samba.model.SmbConnectionProfile
 
 interface SmbFileRepository {
 
-    fun listFiles(
+    suspend fun listFiles(
         connectionProfile: SmbConnectionProfile,
         password: String
     ): SmbFileResult<List<SmbFileItem>>
