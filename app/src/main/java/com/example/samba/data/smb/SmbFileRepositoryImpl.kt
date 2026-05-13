@@ -12,51 +12,56 @@ import com.hierynomus.smbj.SMBClient
 import com.hierynomus.smbj.SmbConfig
 import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.share.DiskShare
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class SmbFileRepositoryImpl : SmbFileRepository {
-    override fun listFiles(
+
+    override suspend fun listFiles(
         connectionProfile: SmbConnectionProfile,
         password: String
     ): SmbFileResult<List<SmbFileItem>> {
-        return try {
-            val client = SMBClient(SmbConfig.createDefaultConfig())
+        return withContext(Dispatchers.IO) {
+            try {
+                val client = SMBClient(SmbConfig.createDefaultConfig())
 
-            client.connect(connectionProfile.host).use { connection ->
-                val authenticationContext = AuthenticationContext(
-                    connectionProfile.username,
-                    password.toCharArray(),
-                    ""
-                )
+                client.connect(connectionProfile.host).use { connection ->
+                    val authenticationContext = AuthenticationContext(
+                        connectionProfile.username,
+                        password.toCharArray(),
+                        ""
+                    )
 
-                val session = connection.authenticate(authenticationContext)
+                    val session = connection.authenticate(authenticationContext)
 
-                (session.connectShare(connectionProfile.shareName) as DiskShare).use { share ->
-                    val files = share.list(null)
-                        .filterNot { file ->
-                            file.fileName == "." || file.fileName == ".."
-                        }
-                        .map { file ->
-                            file.toSmbFileItem()
-                        }
-                    SmbFileResult.Success(files)
+                    (session.connectShare(connectionProfile.shareName) as DiskShare).use { share ->
+                        val files = share.list(null)
+                            .filterNot { file ->
+                                file.fileName == "." || file.fileName == ".."
+                            }
+                            .map { file ->
+                                file.toSmbFileItem()
+                            }
+                        SmbFileResult.Success(files)
+                    }
                 }
+            } catch (exception: SMBApiException) {
+                Error(
+                    message = exception.toUserMessage(),
+                    cause = exception
+                )
+            } catch (exception: IOException) {
+                Error(
+                    message = "Unable to connect to the server. Check the host and network.",
+                    cause = exception
+                )
+            } catch (exception: Exception) {
+                Error(
+                    message = "Unexpected error while listing files.",
+                    cause = exception
+                )
             }
-        } catch (exception: SMBApiException) {
-            Error(
-                message = exception.toUserMessage(),
-                cause = exception
-            )
-        } catch (exception: IOException) {
-            Error(
-                message = "Unable to connect to the server. Check the host and network.",
-                cause = exception
-            )
-        } catch (exception: Exception) {
-            Error(
-                message = "Unexpected error while listing files.",
-                cause = exception
-            )
         }
     }
 

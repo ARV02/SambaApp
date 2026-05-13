@@ -3,10 +3,10 @@ package com.example.samba.freeBSD;
 import static com.example.samba.utils.Constants.CONNECTION_PROFILE;
 import static com.example.samba.utils.Constants.PASSWORD;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +16,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.samba.R;
-import com.example.samba.data.smb.SmbFileRepositoryImpl;
 import com.example.samba.model.SmbConnectionProfile;
 import com.example.samba.domain.model.SmbFileItem;
-import com.example.samba.domain.model.SmbFileResult;
-import com.example.samba.domain.repository.SmbFileRepository;
+import com.example.samba.presentation.filebrowser.FileBrowserUiState;
+import com.example.samba.presentation.filebrowser.FileBrowserViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class FilesFragment extends Fragment {
     private SmbConnectionProfile connectionProfile;
     private ListView listView;
 
-    private final SmbFileRepository repository = new SmbFileRepositoryImpl();
+    private FileBrowserViewModel viewModel;
 
     public FilesFragment() {
         // Required empty public constructor
@@ -58,48 +57,45 @@ public class FilesFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_files, container, false);
         listView = rootView.findViewById(R.id.files);
-        new ListFilesTask().execute();
+        viewModel = new ViewModelProvider(this).get(FileBrowserViewModel.class);
+        observeFileBrowserState();
+        viewModel.listFiles(connectionProfile, passwd);
         return rootView;
     }
 
-    private class ListFilesTask extends AsyncTask<Void, Void, SmbFileResult<List<SmbFileItem>>> {
-        @Override
-        protected SmbFileResult<List<SmbFileItem>> doInBackground(Void... voids) {
-            return repository.listFiles(connectionProfile, passwd);
-        }
-
-        @Override
-        protected void onPostExecute(SmbFileResult<List<SmbFileItem>> listSmbFileResult) {
-            if (listSmbFileResult instanceof SmbFileResult.Success) {
-                List<SmbFileItem> files =
-                        ((SmbFileResult.Success<List<SmbFileItem>>) listSmbFileResult).getData();
-
-                List<String> fileNames = new ArrayList<>();
-
-                for (SmbFileItem file : files) {
-                    fileNames.add(file.getName());
-                }
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        requireContext(),
-                        android.R.layout.simple_list_item_1,
-                        fileNames
-                );
-
-                listView.setAdapter(adapter);
+    private void observeFileBrowserState() {
+        viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
+            if (state instanceof FileBrowserUiState.Loading) {
+                Toast.makeText(requireContext(), "Loading files...", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (listSmbFileResult instanceof SmbFileResult.Error) {
-                String message = ((SmbFileResult.Error) listSmbFileResult).getMessage();
-
-                Toast.makeText(
-                        requireContext(),
-                        message,
-                        Toast.LENGTH_LONG
-                ).show();
+            if (state instanceof FileBrowserUiState.Success) {
+                FileBrowserUiState.Success success = (FileBrowserUiState.Success) state;
+                showFiles(success.getFiles());
+                return;
             }
+
+            if (state instanceof FileBrowserUiState.Error) {
+                FileBrowserUiState.Error error = (FileBrowserUiState.Error) state;
+                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showFiles(List<SmbFileItem> files) {
+        List<String> fileNames = new ArrayList<>();
+
+        for (SmbFileItem file : files) {
+            fileNames.add(file.getName());
         }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                fileNames
+        );
+
+        listView.setAdapter(adapter);
     }
 }
-

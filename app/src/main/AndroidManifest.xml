@@ -15,7 +15,8 @@
         <activity android:name=".fedora.FedoraActivity"></activity>
         <activity android:name=".solaris.SolarisActivity" />
         <activity android:name=".freeBSD.FreeBSD" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

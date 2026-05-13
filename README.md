@@ -125,11 +125,17 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v0.1.0 - Repository revival
 
 - [x] Update Gradle Wrapper
+
 - [x] Update Android Gradle Plugin
+
 - [x] Replace deprecated repositories with Maven Central
+
 - [x] Remove sensitive logs
+
 - [x] Add project README
+
 - [x] Add `.gitignore`
+
 - [x] Verify the project compiles successfully
 
 ---
@@ -137,14 +143,23 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v0.2.0 - Legacy cleanup
 
 - [x] Add Kotlin support
+
 - [x] Add centralized Bundle key constants
+
 - [x] Clean unused imports
+
 - [x] Format legacy Java, Kotlin, and Gradle files
+
 - [x] Review AndroidManifest permissions
+
 - [x] Review deprecated or unused dependencies
+
 - [x] Remove unused legacy `jcifs` dependency/files if no longer required
+
 - [x] Document the current SMB/Samba flow
+
 - [x] Identify duplicated logic between FreeBSD, Solaris, and Fedora flows
+
 - [x] Mark hardcoded connection values for future refactoring
 
 ---
@@ -152,10 +167,15 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v0.3.0 - Configurable SMB connections
 
 - [x] Remove hardcoded IP addresses
+
 - [x] Remove hardcoded share names
+
 - [x] Add a connection profile model
+
 - [x] Allow users to enter host, share name, username, and password
+
 - [x] Add basic field validation
+
 - [x] Keep optional presets for FreeBSD, Solaris, and Fedora
 
 ---
@@ -163,79 +183,121 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v0.4.0 - SMB logic refactor
 
 - [x] Move SMB/Samba connection logic out of Activities and Fragments
+
 - [x] Create a reusable SMB repository
+
 - [x] Unify file listing logic
+
 - [x] Reduce duplicated code between operating system flows
+
 - [x] Improve connection error handling
 
 ---
 
-### v0.5.0 - Local testing environment
+### v0.5.0 - Async modernization
 
-- [ ] Add a local Samba test environment
-- [ ] Document how to test the app without the original virtual machines
-- [ ] Add sample shared folders and test credentials
-- [ ] Keep FreeBSD, Solaris, and Fedora as optional advanced test environments
+- [x] Replace `AsyncTask` with coroutines
 
----
+- [x] Run network operations on `Dispatchers.IO`
 
-### v0.6.0 - Kotlin migration
+- [x] Add cancellable SMB operations
 
-- [ ] Migrate models to Kotlin
-- [ ] Migrate utility classes to Kotlin
-- [ ] Migrate SMB-related logic to Kotlin
-- [ ] Improve null safety
-- [ ] Keep the app compiling after each migration step
+- [x] Improve loading, success, and error states
+
+- [x] Prepare async flow for MVVM
 
 ---
 
-### v0.7.0 - Async modernization
-
-- [ ] Replace `AsyncTask` with coroutines
-- [ ] Run network operations on `Dispatchers.IO`
-- [ ] Add cancellable SMB operations
-- [ ] Improve loading, success, and error states
-
----
-
-### v0.8.0 - MVVM architecture
+### v0.6.0 - MVVM architecture
 
 - [ ] Add ViewModels
+
 - [ ] Move UI state out of Fragments
+
 - [ ] Expose state using StateFlow or LiveData
+
 - [ ] Separate UI logic from business logic
+
+- [ ] Keep legacy XML UI working during the transition
+
 - [ ] Prepare the project for Compose migration
 
 ---
 
-### v0.9.0 - Jetpack Compose migration
+### v0.7.0 - Jetpack Compose foundation
 
 - [ ] Add Jetpack Compose
-- [ ] Create a new connection screen with Compose
-- [ ] Add Material 3 components
-- [ ] Add loading and error states in the UI
-- [ ] Gradually replace XML screens
+
+- [ ] Add Material 3
+
+- [ ] Create the app theme and color system
+
+- [ ] Create reusable Compose components
+
+- [ ] Keep interoperability with the legacy Fragment/XML flow
 
 ---
 
-### v1.0.0 - Modern SMB file browser
+### v0.8.0 - New connection flow in Compose
+
+- [ ] Create a Compose-based connection screen
+
+- [ ] Add profile name, host, share name, username, and password fields
+
+- [ ] Add preset chips for FreeBSD, Solaris, Fedora, and Custom
+
+- [ ] Add loading and error states
+
+- [ ] Connect the screen with the ViewModel
+
+---
+
+### v0.9.0 - Modern SMB file browser
 
 - [ ] Create a Compose-based file browser
+
 - [ ] Navigate through remote folders
+
 - [ ] Display files and folders with clear UI states
+
 - [ ] Refresh file lists
+
 - [ ] Show empty and error states
+
 - [ ] Add screenshots and demo GIF to the README
+
+---
+
+### v1.0.0 - Stable modern demo
+
+- [ ] Complete the main Compose flow
+
+- [ ] Support configurable SMB connections
+
+- [ ] Support remote file listing
+
+- [ ] Add connection profiles UI
+
+- [ ] Add basic settings screen
+
+- [ ] Add screenshots and demo GIF
+
+- [ ] Create a stable demo release
 
 ---
 
 ### v1.1.0 - Remote file operations
 
 - [ ] Create remote folders
+
 - [ ] Create remote files
+
 - [ ] Delete remote files
+
 - [ ] Delete empty folders
+
 - [ ] Add confirmation dialogs before destructive actions
+
 - [ ] Refresh the file list after each operation
 
 ---
@@ -243,9 +305,13 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v1.2.0 - File transfers
 
 - [ ] Upload local files to SMB shared folders
+
 - [ ] Download remote files to the Android device
+
 - [ ] Show transfer progress
+
 - [ ] Support background transfers with WorkManager
+
 - [ ] Handle large files safely
 
 ---
@@ -253,9 +319,13 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v1.3.0 - Security improvements
 
 - [ ] Add secure credential storage
+
 - [ ] Avoid storing plain text passwords
+
 - [ ] Clear passwords from memory when possible
+
 - [ ] Add connection profile validation
+
 - [ ] Add optional read-only mode
 
 ---
@@ -263,10 +333,15 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v1.4.0 - Project quality
 
 - [ ] Add unit tests
+
 - [ ] Add GitHub Actions
+
 - [ ] Add static analysis
+
 - [ ] Add lint checks
+
 - [ ] Improve README documentation
+
 - [ ] Add architecture diagram
 
 ---
@@ -274,11 +349,40 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 ### v1.5.0 - Portfolio polish
 
 - [ ] Add screenshots
+
 - [ ] Add demo video or GIF
+
 - [ ] Add Before vs After section
+
 - [ ] Add release notes
+
 - [ ] Add GitHub topics
+
 - [ ] Prepare the repository as a featured GitHub project
+
+---
+
+### v2.0.0 - Play Store candidate
+
+- [ ] Update the app package name
+
+- [ ] Update target SDK to meet Google Play requirements
+
+- [ ] Generate a signed Android App Bundle
+
+- [ ] Prepare Play Store listing
+
+- [ ] Add production-ready screenshots
+
+- [ ] Add privacy policy
+
+- [ ] Complete Data Safety form
+
+- [ ] Create internal testing release
+
+- [ ] Fix Play Console warnings
+
+- [ ] Publish first production release
 
 ## Tech stack
 
