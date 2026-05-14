@@ -210,17 +210,17 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v0.6.0 - MVVM architecture
 
-- [ ] Add ViewModels
+- [x] Add ViewModels
 
-- [ ] Move UI state out of Fragments
+- [x] Move UI state out of Fragments
 
-- [ ] Expose state using StateFlow or LiveData
+- [x] Expose state using StateFlow or LiveData
 
-- [ ] Separate UI logic from business logic
+- [x] Separate UI logic from business logic
 
-- [ ] Keep legacy XML UI working during the transition
+- [x] Keep legacy XML UI working during the transition
 
-- [ ] Prepare the project for Compose migration
+- [x] Prepare the project for Compose migration
 
 ---
 

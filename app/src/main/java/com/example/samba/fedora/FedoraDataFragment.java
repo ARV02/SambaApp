@@ -1,11 +1,9 @@
 package com.example.samba.fedora;
 
-import static com.example.samba.utils.Constants.CONNECTION_PROFILE;
-import static com.example.samba.utils.Constants.PASSWORD;
-
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +14,15 @@ import android.widget.Toast;
 
 import com.example.samba.R;
 import com.example.samba.model.SmbConnectionProfile;
+import com.example.samba.presentation.connection.ConnectionFormUiState;
+import com.example.samba.presentation.connection.ConnectionFormViewModel;
+import com.example.samba.utils.SmbBundleFactory;
 
 public class FedoraDataFragment extends Fragment {
     private EditText usuari3, contra3, host, sharedName;
     private Button aceptar3;
+
+    private ConnectionFormViewModel viewModel;
 
     public FedoraDataFragment() {
         // Required empty public constructor
@@ -49,44 +52,62 @@ public class FedoraDataFragment extends Fragment {
         usuari3 = rootView.findViewById(R.id.usuario3);
         contra3 = rootView.findViewById(R.id.pass3);
         aceptar3 = rootView.findViewById(R.id.buttons3);
+        viewModel = new ViewModelProvider(this).get(ConnectionFormViewModel.class);
+        observeConnectionFormState();
+
         aceptar3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FedoraFilesFragment files = new FedoraFilesFragment();
-
-                String username = usuari3.getText().toString().trim();
-                String password = contra3.getText().toString();
-                String hostValue = host.getText().toString().trim();
-                String shareNameValue = sharedName.getText().toString().trim();
-
-                if (username.isEmpty()
-                        || password.isEmpty()
-                        || hostValue.isEmpty()
-                        || shareNameValue.isEmpty()) {
-                    Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                SmbConnectionProfile connectionProfile = new SmbConnectionProfile(
+                viewModel.validateAndCreateProfile(
                         "Fedora",
-                        hostValue,
-                        shareNameValue,
-                        username
+                        host.getText().toString(),
+                        sharedName.getText().toString(),
+                        usuari3.getText().toString(),
+                        contra3.getText().toString()
                 );
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(CONNECTION_PROFILE, connectionProfile);
-                bundle.putString(PASSWORD, password);
-
-                files.setArguments(bundle);
-
-                requireActivity()
-                        .getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container3, files)
-                        .commit();
             }
         });
         return rootView;
+    }
+
+    private void observeConnectionFormState() {
+        viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
+
+            if (state instanceof ConnectionFormUiState.Success) {
+                ConnectionFormUiState.Success success = (ConnectionFormUiState.Success) state;
+
+                navigateToFiles(
+                        success.getConnectionProfile(),
+                        success.getPassword()
+                );
+                viewModel.resetState();
+            }
+
+            if (state instanceof ConnectionFormUiState.ValidationError) {
+                ConnectionFormUiState.ValidationError error =
+                        (ConnectionFormUiState.ValidationError) state;
+                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                viewModel.resetState();
+            }
+        });
+    }
+
+    private void navigateToFiles(
+            SmbConnectionProfile connectionProfile,
+            String password
+    ) {
+        FedoraFilesFragment files = new FedoraFilesFragment();
+
+        Bundle bundle = SmbBundleFactory.createConnectionBundle(
+                connectionProfile,
+                password
+        );
+        files.setArguments(bundle);
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container3, files)
+                .commit();
     }
 }
