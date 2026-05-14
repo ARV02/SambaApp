@@ -81,7 +81,7 @@ public class DataFragment extends Fragment {
             SmbConnectionProfile connectionProfile,
             String password
     ) {
-        FedoraFilesFragment files = new FedoraFilesFragment();
+        FilesFragment files = new FilesFragment();
 
         Bundle bundle = SmbBundleFactory.createConnectionBundle(
                 connectionProfile,

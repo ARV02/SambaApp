@@ -99,7 +99,7 @@ public class SolarisDataFragment extends Fragment {
             SmbConnectionProfile connectionProfile,
             String password
     ) {
-        FedoraFilesFragment files = new FedoraFilesFragment();
+        SolarisFilesFragment files = new SolarisFilesFragment();
 
         Bundle bundle = SmbBundleFactory.createConnectionBundle(
                 connectionProfile,
