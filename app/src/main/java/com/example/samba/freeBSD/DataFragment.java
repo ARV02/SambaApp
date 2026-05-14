@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.samba.R;
-import com.example.samba.fedora.FedoraFilesFragment;
 import com.example.samba.model.SmbConnectionProfile;
 import com.example.samba.presentation.connection.ConnectionFormUiState;
 import com.example.samba.presentation.connection.ConnectionFormViewModel;

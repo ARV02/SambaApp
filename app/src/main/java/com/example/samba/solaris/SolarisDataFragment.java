@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.samba.R;
-import com.example.samba.fedora.FedoraFilesFragment;
 import com.example.samba.model.SmbConnectionProfile;
 import com.example.samba.presentation.connection.ConnectionFormUiState;
 import com.example.samba.presentation.connection.ConnectionFormViewModel;
