@@ -226,15 +226,15 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v0.7.0 - Jetpack Compose foundation
 
-- [ ] Add Jetpack Compose
+- [x] Add Jetpack Compose
 
-- [ ] Add Material 3
+- [x] Add Material 3
 
-- [ ] Create the app theme and color system
+- [x] Create the app theme and color system
 
-- [ ] Create reusable Compose components
+- [x] Create reusable Compose components
 
-- [ ] Keep interoperability with the legacy Fragment/XML flow
+- [x] Keep interoperability with the legacy Fragment/XML flow
 
 ---
 
