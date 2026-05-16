@@ -20,6 +20,7 @@ class ConnectionComposeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val fragmentContainerId = container?.id ?: View.NO_ID
 
         requireActivity().window.statusBarColor = "#070B1A".toColorInt()
         requireActivity().window.navigationBarColor = "#070B1A".toColorInt()
@@ -43,10 +44,13 @@ class ConnectionComposeFragment : Fragment() {
                                 connectionProfile,
                                 password
                             )
-                            requireActivity()
-                                .supportFragmentManager
+                            if (fragmentContainerId == View.NO_ID) {
+                                return@ConnectionRoute
+                            }
+
+                            parentFragmentManager
                                 .beginTransaction()
-                                .replace(R.id.container3, files)
+                                .replace(fragmentContainerId, files)
                                 .addToBackStack("connection_to_file_browser")
                                 .commit()
                         },
