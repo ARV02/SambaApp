@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -63,14 +64,17 @@ fun ConnectionRoute(
 ) {
     val formState by viewModel.formState.observeAsState(ConnectionFormState())
     val uiState by viewModel.uiState.observeAsState(ConnectionFormUiState.Idle)
-    if (uiState is ConnectionFormUiState.Success) {
-        val success = uiState as ConnectionFormUiState.Success
+    LaunchedEffect(uiState) {
+        val state = uiState
 
-        onConnectionReady(
-            success.connectionProfile,
-            success.password
-        )
-        viewModel.resetState()
+        if (state is ConnectionFormUiState.Success) {
+            viewModel.resetForm()
+
+            onConnectionReady(
+                state.connectionProfile,
+                state.password
+            )
+        }
     }
 
     ConnectionScreen(
@@ -82,7 +86,10 @@ fun ConnectionRoute(
         onUsernameChanged = viewModel::onUsernameChanged,
         onPasswordChanged = viewModel::onPasswordChanged,
         onConnectClick = viewModel::submit,
-        onBackClick = onBackClick,
+        onBackClick = {
+            viewModel.resetForm()
+            onBackClick()
+        },
         onErrorShown = viewModel::clearError
     )
 }
@@ -256,8 +263,6 @@ fun ConnectionScreen(
             )
         }
 
-
-
         if (state.errorMessage != null) {
             Text(
                 text = state.errorMessage,
@@ -341,7 +346,7 @@ private fun SecurityNoteCard() {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            contentColor = Color(0xFF10172A)
+            containerColor = Color(0xFF10172A)
         ),
         border = BorderStroke(
             width = 1.dp,

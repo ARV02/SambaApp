@@ -24,13 +24,26 @@ class FileBrowserViewModel (
 
     private var listFilesJob: Job? = null
 
+    private var activeConnectionKey: String? = null
+
     fun initialize(
         connectionProfile: SmbConnectionProfile,
         password: String
     ) {
+        val nextConnectionKey = buildConnectionKey(
+            connectionProfile = connectionProfile,
+            password = password
+        )
+
+        val shouldReload = activeConnectionKey != nextConnectionKey
+
         this.connectionProfile = connectionProfile
         this.password = password
-        listFiles(path = "")
+        activeConnectionKey = nextConnectionKey
+
+        if (shouldReload) {
+            listFiles(path = "")
+        }
     }
 
     fun openFolder(folder: SmbFileItem) {
@@ -57,6 +70,19 @@ class FileBrowserViewModel (
 
     private fun currentPath(): String {
         return _uiState.value?.currentPath.orEmpty()
+    }
+
+    private fun buildConnectionKey(
+        connectionProfile: SmbConnectionProfile,
+        password: String
+    ): String {
+        return listOf(
+            connectionProfile.name,
+            connectionProfile.host,
+            connectionProfile.shareName,
+            connectionProfile.username,
+            password.hashCode().toString()
+        ).joinToString(separator = "|")
     }
 
     fun listFiles(path: String = currentPath()) {

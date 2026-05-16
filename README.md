@@ -270,19 +270,19 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v1.0.0 - Stable modern demo
 
-- [ ] Complete the main Compose flow
+- [x] Complete the main Compose flow
 
-- [ ] Support configurable SMB connections
+- [x] Support configurable SMB connections
 
-- [ ] Support remote file listing
+- [x] Support remote file listing
 
-- [ ] Add connection profiles UI
+- [x] Add connection profiles UI
 
-- [ ] Add basic settings screen
+- [x] Add basic settings screen
 
-- [ ] Add screenshots and demo GIF
+- [x] Add screenshots and demo GIF
 
-- [ ] Create a stable demo release
+- [x] Create a stable demo release
 
 ---
 
