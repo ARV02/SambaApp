@@ -411,6 +411,11 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 - GitHub Actions
 
 ---
+## Demo
+
+https://github.com/user-attachments/assets/0dea6b36-663f-4bb5-a4e1-02f9d384f97e
+
+---
 
 ## Architecture target
 
