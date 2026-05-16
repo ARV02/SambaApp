@@ -105,4 +105,9 @@ class ConnectionFormViewModel : ViewModel() {
     ) {
         _formState.value = (_formState.value ?: ConnectionFormState()).reducer()
     }
+
+    fun resetForm() {
+        _formState.value = ConnectionFormState()
+        _uiState.value = ConnectionFormUiState.Idle
+    }
 }

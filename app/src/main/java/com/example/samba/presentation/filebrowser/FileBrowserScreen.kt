@@ -1,5 +1,6 @@
 package com.example.samba.presentation.filebrowser
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,12 @@ fun FileBrowserRoute(
 ) {
     val observedState by viewModel.uiState.observeAsState()
     val state = observedState ?: FileBrowserUiState()
+
+    BackHandler {
+        val handled = viewModel.goBackFolder()
+
+        if (!handled) onBackClick()
+    }
 
     LaunchedEffect(connectionProfile, password) {
         viewModel.initialize(connectionProfile, password)

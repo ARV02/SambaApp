@@ -1,27 +1,33 @@
 package com.example.samba.presentation.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.samba.presentation.connection.ConnectionRoute
 import com.example.samba.presentation.filebrowser.FileBrowserRoute
 import com.example.samba.presentation.profiles.ConnectionProfilesScreen
 import com.example.samba.presentation.settings.SettingsScreen
 
 @Composable
-fun SambaAppRoot() {
-    var currentScreen by remember { mutableStateOf<MainScreen>(MainScreen.Profiles) }
+fun SambaAppRoot(
+    viewModel: SambaAppRootViewModel = viewModel()
+) {
+    val currentScreen = viewModel.currentScreen
 
-    when (val screen = currentScreen) {
+    BackHandler(
+        enabled = currentScreen != MainScreen.Profiles
+    ) {
+        viewModel.handleBack()
+    }
+
+    when (currentScreen) {
         MainScreen.Profiles -> {
             ConnectionProfilesScreen(
                 onNewConnectionClick = {
-                    currentScreen = MainScreen.NewConnection
+                    viewModel.openNewConnection()
                 },
                 onSettingsClick = {
-                    currentScreen = MainScreen.Settings
+                    viewModel.openSettings()
                 }
             )
         }
@@ -29,23 +35,23 @@ fun SambaAppRoot() {
         MainScreen.NewConnection -> {
             ConnectionRoute(
                 onConnectionReady = { connectionProfile, password ->
-                    currentScreen = MainScreen.FileBrowser(
+                    viewModel.openFileBrowser(
                         connectionProfile = connectionProfile,
                         password = password
                     )
                 },
                 onBackClick = {
-                    currentScreen = MainScreen.Profiles
+                    viewModel.openProfiles()
                 }
             )
         }
 
         is MainScreen.FileBrowser -> {
             FileBrowserRoute(
-                connectionProfile = screen.connectionProfile,
-                password = screen.password,
+                connectionProfile = currentScreen.connectionProfile,
+                password = currentScreen.password,
                 onBackClick = {
-                    currentScreen = MainScreen.NewConnection
+                    viewModel.openNewConnection()
                 }
             )
         }
@@ -53,7 +59,7 @@ fun SambaAppRoot() {
         MainScreen.Settings -> {
             SettingsScreen(
                 onBackClick = {
-                    currentScreen = MainScreen.Profiles
+                    viewModel.openNewConnection()
                 }
             )
         }
