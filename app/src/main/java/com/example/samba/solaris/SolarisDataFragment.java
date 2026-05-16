@@ -16,6 +16,7 @@ import com.example.samba.R;
 import com.example.samba.model.SmbConnectionProfile;
 import com.example.samba.presentation.connection.ConnectionFormUiState;
 import com.example.samba.presentation.connection.ConnectionFormViewModel;
+import com.example.samba.presentation.filebrowser.FileBrowserComposeFragment;
 import com.example.samba.utils.SmbBundleFactory;
 
 public class SolarisDataFragment extends Fragment {
@@ -98,7 +99,7 @@ public class SolarisDataFragment extends Fragment {
             SmbConnectionProfile connectionProfile,
             String password
     ) {
-        SolarisFilesFragment files = new SolarisFilesFragment();
+        FileBrowserComposeFragment files = new FileBrowserComposeFragment();
 
         Bundle bundle = SmbBundleFactory.createConnectionBundle(
                 connectionProfile,

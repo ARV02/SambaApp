@@ -20,7 +20,8 @@ class SmbFileRepositoryImpl : SmbFileRepository {
 
     override suspend fun listFiles(
         connectionProfile: SmbConnectionProfile,
-        password: String
+        password: String,
+        path: String
     ): SmbFileResult<List<SmbFileItem>> {
         return withContext(Dispatchers.IO) {
             try {
@@ -36,12 +37,18 @@ class SmbFileRepositoryImpl : SmbFileRepository {
                     val session = connection.authenticate(authenticationContext)
 
                     (session.connectShare(connectionProfile.shareName) as DiskShare).use { share ->
-                        val files = share.list(null)
+                        val normalizedPath = path.trim('/')
+                        val files = share.list(normalizedPath)
                             .filterNot { file ->
                                 file.fileName == "." || file.fileName == ".."
                             }
                             .map { file ->
-                                file.toSmbFileItem()
+                                val childPath = if (normalizedPath.isBlank()) {
+                                    file.fileName
+                                } else {
+                                    "$normalizedPath/${file.fileName}"
+                                }
+                                file.toSmbFileItem(path = childPath)
                             }
                         SmbFileResult.Success(files)
                     }
@@ -65,10 +72,10 @@ class SmbFileRepositoryImpl : SmbFileRepository {
         }
     }
 
-    private fun FileIdBothDirectoryInformation.toSmbFileItem(): SmbFileItem {
+    private fun FileIdBothDirectoryInformation.toSmbFileItem(path: String): SmbFileItem {
         return SmbFileItem(
             name = fileName,
-            path = fileName,
+            path = path,
             isDirectory = isDirectory(),
             size = endOfFile
         )

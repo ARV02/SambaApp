@@ -8,6 +8,7 @@ interface SmbFileRepository {
 
     suspend fun listFiles(
         connectionProfile: SmbConnectionProfile,
-        password: String
+        password: String,
+        path: String = ""
     ): SmbFileResult<List<SmbFileItem>>
 }
