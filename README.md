@@ -240,15 +240,15 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v0.8.0 - New connection flow in Compose
 
-- [ ] Create a Compose-based connection screen
+- [x] Create a Compose-based connection screen
 
-- [ ] Add profile name, host, share name, username, and password fields
+- [x] Add profile name, host, share name, username, and password fields
 
-- [ ] Add preset chips for FreeBSD, Solaris, Fedora, and Custom
+- [x] Add preset chips for FreeBSD, Solaris, Fedora, and Custom
 
-- [ ] Add loading and error states
+- [x] Add loading and error states
 
-- [ ] Connect the screen with the ViewModel
+- [x] Connect the screen with the ViewModel
 
 ---
 
