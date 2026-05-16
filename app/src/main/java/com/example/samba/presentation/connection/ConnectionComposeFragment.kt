@@ -12,6 +12,7 @@ import com.example.samba.presentation.theme.SambaAppTheme
 import com.example.samba.utils.SmbBundleFactory
 import androidx.core.graphics.toColorInt
 import com.example.samba.presentation.filebrowser.FileBrowserComposeFragment
+import com.example.samba.presentation.main.SambaAppRoot
 
 class ConnectionComposeFragment : Fragment() {
 
@@ -37,7 +38,8 @@ class ConnectionComposeFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 SambaAppTheme {
-                    ConnectionRoute(
+                    SambaAppRoot()
+                    /*ConnectionRoute(
                         onConnectionReady = { connectionProfile, password ->
                             val files = FileBrowserComposeFragment()
                             files.arguments = SmbBundleFactory.createConnectionBundle(
@@ -57,7 +59,7 @@ class ConnectionComposeFragment : Fragment() {
                         onBackClick = {
                             requireActivity().onBackPressedDispatcher.onBackPressed()
                         }
-                    )
+                    )*/
                 }
             }
         }
