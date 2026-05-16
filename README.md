@@ -254,17 +254,17 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v0.9.0 - Modern SMB file browser
 
-- [ ] Create a Compose-based file browser
+- [x] Create a Compose-based file browser
 
-- [ ] Navigate through remote folders
+- [x] Navigate through remote folders
 
-- [ ] Display files and folders with clear UI states
+- [x] Display files and folders with clear UI states
 
-- [ ] Refresh file lists
+- [x] Refresh file lists
 
-- [ ] Show empty and error states
+- [x] Show empty and error states
 
-- [ ] Add screenshots and demo GIF to the README
+- [x] Add screenshots and demo GIF to the README
 
 ---
 

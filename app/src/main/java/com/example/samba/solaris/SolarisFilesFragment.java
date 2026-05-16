@@ -24,7 +24,7 @@ import com.example.samba.presentation.filebrowser.FileBrowserViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SolarisFilesFragment extends Fragment {
+/*public class SolarisFilesFragment extends Fragment {
 
     private String passwd;
     private SmbConnectionProfile connectionProfile;
@@ -98,4 +98,4 @@ public class SolarisFilesFragment extends Fragment {
 
         listView.setAdapter(adapter);
     }
-}
+} */
