@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.example.samba.R;
+import com.example.samba.presentation.connection.ConnectionComposeFragment;
 
 public class FedoraActivity extends AppCompatActivity {
 
@@ -14,7 +15,10 @@ public class FedoraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fedora);
-        showFragment(new FedoraDataFragment());
+
+        if (savedInstanceState == null) {
+            showFragment(new ConnectionComposeFragment());
+        }
     }
 
     private void showFragment(Fragment fragment) {

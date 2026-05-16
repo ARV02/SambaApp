@@ -10,6 +10,50 @@ class ConnectionFormViewModel : ViewModel() {
     private val _uiState = MutableLiveData<ConnectionFormUiState>(ConnectionFormUiState.Idle)
     val uiState: LiveData<ConnectionFormUiState> = _uiState
 
+    private val _formState = MutableLiveData(ConnectionFormState())
+    val formState: LiveData<ConnectionFormState> = _formState
+
+    fun onProfileNameChanged(value: String) {
+        updateState { copy(profileName = value) }
+    }
+
+    fun onHostChanged(value: String) {
+        updateState { copy(host = value) }
+    }
+
+    fun onShareNameChanged(value: String) {
+        updateState { copy(shareName = value) }
+    }
+
+    fun onUsernameChanged(value: String) {
+        updateState { copy(username = value) }
+    }
+
+    fun onPasswordChanged(value: String) {
+        updateState { copy(password = value) }
+    }
+
+    fun onPresetSelected(preset: ConnectionPreset) {
+        updateState {
+            copy(
+                selectedPreset = preset,
+                profileName = preset.defaultProfileName.ifBlank { profileName },
+                shareName = preset.defaultShareName.ifBlank { shareName }
+            )
+        }
+    }
+
+    fun submit() {
+        val state = _formState.value ?: ConnectionFormState()
+        validateAndCreateProfile(
+            profileName = state.profileName,
+            host = state.host,
+            shareName = state.shareName,
+            username = state.username,
+            password = state.password
+        )
+    }
+
     fun validateAndCreateProfile(
         profileName: String,
         host: String,
@@ -50,5 +94,15 @@ class ConnectionFormViewModel : ViewModel() {
 
     fun resetState() {
         _uiState.value = ConnectionFormUiState.Idle
+    }
+
+    fun clearError() {
+        updateState { copy(errorMessage = null) }
+    }
+
+    private fun updateState(
+        reducer: ConnectionFormState.() -> ConnectionFormState
+    ) {
+        _formState.value = (_formState.value ?: ConnectionFormState()).reducer()
     }
 }
