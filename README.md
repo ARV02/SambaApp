@@ -391,10 +391,32 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 - [ ] Fix Play Console warnings
 
 - [ ] Publish first production release
-- 
+
 ---
 
-### v2.1.0 - File transfers
+### v2.1.0 - App polish and settings
+
+- [ ] Improve settings screen
+
+- [ ] Add app info and version details
+
+- [ ] Add connection behavior preferences
+
+- [ ] Add read-only mode preference
+
+- [ ] Add theme/appearance options if needed
+
+- [ ] Improve empty states and helper texts
+
+- [ ] Polish UI animations and transitions
+
+- [ ] Improve accessibility labels
+
+- [ ] Fix UI issues found during internal testing
+
+---
+
+### v3.0.0 - File transfers
 
 - [ ] Upload local files to SMB shared folders
 
