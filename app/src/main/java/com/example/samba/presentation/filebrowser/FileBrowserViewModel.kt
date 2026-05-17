@@ -85,7 +85,10 @@ class FileBrowserViewModel (
         ).joinToString(separator = "|")
     }
 
-    fun listFiles(path: String = currentPath()) {
+    fun listFiles(
+        path: String = currentPath(),
+        actionMessage: FileBrowserActionMessage? = null
+    ) {
         val profile = connectionProfile ?: return
         val currentPassword = password ?: return
 
@@ -93,10 +96,12 @@ class FileBrowserViewModel (
 
         _uiState.value = _uiState.value?.copy(
             isLoading = true,
-            errorMessage = null
+            errorMessage = null,
+            actionMessage = null
         ) ?: FileBrowserUiState(
             isLoading = true,
-            currentPath = path
+            currentPath = path,
+            actionMessage = null
         )
 
         listFilesJob = viewModelScope.launch {
@@ -112,7 +117,8 @@ class FileBrowserViewModel (
                         isLoading = false,
                         files = result.data,
                         currentPath = path,
-                        errorMessage = null
+                        errorMessage = null,
+                        actionMessage = actionMessage
                     )
                 }
 
@@ -141,5 +147,141 @@ class FileBrowserViewModel (
     override fun onCleared() {
         cancelCurrentOperation()
         super.onCleared()
+    }
+
+    fun createFolder(folderName: String) {
+        val profile = connectionProfile ?: return
+        val currentPassword = password ?: return
+        val path = currentPath()
+
+        viewModelScope.launch {
+            _uiState.value = _uiState.value?.copy(isLoading = true, errorMessage = null)
+
+            when (
+                val result = repository.createFolder(
+                    connectionProfile = profile,
+                    password = currentPassword,
+                    currentPath = path,
+                    folderName = folderName
+                )
+            ) {
+                is SmbFileResult.Success -> {
+                    listFiles(
+                        path = path,
+                        actionMessage = FileBrowserActionMessage(
+                            "Folder created successfully.",
+                            FileBrowserActionMessageType.Success
+                        )
+                    )
+                }
+
+                is SmbFileResult.Error -> {
+                    _uiState.value = _uiState.value?.copy(
+                        isLoading = false,
+                        actionMessage = FileBrowserActionMessage(
+                            result.message,
+                            FileBrowserActionMessageType.Error
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun createFile(fileName: String) {
+        val profile = connectionProfile ?: return
+        val currentPassword = password ?: return
+        val path = currentPath()
+
+        viewModelScope.launch {
+            _uiState.value = _uiState.value?.copy(isLoading = true, errorMessage = null)
+
+            when (
+                val result = repository.createFile(
+                    connectionProfile = profile,
+                    password = currentPassword,
+                    currentPath = path,
+                    fileName = fileName
+                )
+            ) {
+                is SmbFileResult.Success -> {
+                    listFiles(
+                        path = path,
+                        actionMessage = FileBrowserActionMessage(
+                            "File created successfully.",
+                            FileBrowserActionMessageType.Success
+                        )
+                    )
+                }
+
+                is SmbFileResult.Error -> {
+                    _uiState.value = _uiState.value?.copy(
+                        isLoading = false,
+                        actionMessage = FileBrowserActionMessage(
+                            result.message,
+                            FileBrowserActionMessageType.Error
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun deleteItem(item: SmbFileItem) {
+        val profile = connectionProfile ?: return
+        val currentPassword = password ?: return
+        val path = currentPath()
+
+        viewModelScope.launch {
+            _uiState.value = _uiState.value?.copy(isLoading = true, errorMessage = null)
+
+            val result = if (item.isDirectory) {
+                repository.deleteEmptyFolder(
+                    connectionProfile = profile,
+                    password = currentPassword,
+                    folderPath = item.path
+                )
+            } else {
+                repository.deleteFile(
+                    connectionProfile = profile,
+                    password = currentPassword,
+                    filePath = item.path
+                )
+            }
+
+            when (result) {
+                is SmbFileResult.Success -> {
+                    val successMessage = if (item.isDirectory) {
+                        "Folder deleted successfully."
+                    } else {
+                        "File deleted successfully."
+                    }
+
+                    listFiles(
+                        path = path,
+                        actionMessage = FileBrowserActionMessage(
+                            successMessage,
+                            FileBrowserActionMessageType.Success
+                        )
+                    )
+                }
+
+                is SmbFileResult.Error -> {
+                    _uiState.value = _uiState.value?.copy(
+                        isLoading = false,
+                        actionMessage = FileBrowserActionMessage(
+                            result.message,
+                            FileBrowserActionMessageType.Error
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun clearActionMessage() {
+        _uiState.value = _uiState.value?.copy(
+            actionMessage = null
+        )
     }
 }
