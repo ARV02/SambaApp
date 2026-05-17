@@ -288,31 +288,39 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v1.1.0 - Remote file operations
 
-- [ ] Create remote folders
+- [x] Create remote folders
 
-- [ ] Create remote files
+- [x] Create remote files
 
-- [ ] Delete remote files
+- [x] Delete remote files
 
-- [ ] Delete empty folders
+- [x] Delete empty folders
 
-- [ ] Add confirmation dialogs before destructive actions
+- [x] Add confirmation dialogs before destructive actions
 
-- [ ] Refresh the file list after each operation
+- [x] Refresh the file list after each operation
 
 ---
 
-### v1.2.0 - File transfers
+### v1.2.0 - Connection profiles persistence
 
-- [ ] Upload local files to SMB shared folders
+- [x] Add Room database
 
-- [ ] Download remote files to the Android device
+- [x] Add Hilt dependency injection
 
-- [ ] Show transfer progress
+- [x] Persist connection profiles locally
 
-- [ ] Support background transfers with WorkManager
+- [x] Display saved profiles from local database
 
-- [ ] Handle large files safely
+- [x] Open saved profiles from the home screen
+
+- [x] Ask for password when connecting to a saved profile
+
+- [x] Keep passwords out of Room for now
+
+- [x] Delete saved profiles
+
+- [x] Avoid duplicated saved profiles
 
 ---
 
@@ -383,6 +391,20 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 - [ ] Fix Play Console warnings
 
 - [ ] Publish first production release
+- 
+---
+
+### v2.1.0 - File transfers
+
+- [ ] Upload local files to SMB shared folders
+
+- [ ] Download remote files to the Android device
+
+- [ ] Show transfer progress
+
+- [ ] Support background transfers with WorkManager
+
+- [ ] Handle large files safely
 
 ## Tech stack
 
