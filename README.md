@@ -288,17 +288,17 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v1.1.0 - Remote file operations
 
-- [ ] Create remote folders
+- [x] Create remote folders
 
-- [ ] Create remote files
+- [x] Create remote files
 
-- [ ] Delete remote files
+- [x] Delete remote files
 
-- [ ] Delete empty folders
+- [x] Delete empty folders
 
-- [ ] Add confirmation dialogs before destructive actions
+- [x] Add confirmation dialogs before destructive actions
 
-- [ ] Refresh the file list after each operation
+- [x] Refresh the file list after each operation
 
 ---
 
