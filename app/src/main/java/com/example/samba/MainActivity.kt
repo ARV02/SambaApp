@@ -7,7 +7,9 @@ import androidx.core.graphics.toColorInt
 import androidx.core.view.WindowCompat
 import com.example.samba.presentation.main.SambaAppRoot
 import com.example.samba.presentation.theme.SambaAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

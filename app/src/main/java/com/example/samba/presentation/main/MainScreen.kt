@@ -8,6 +8,12 @@ sealed class MainScreen {
     object Settings : MainScreen()
     data class FileBrowser(
         val connectionProfile: SmbConnectionProfile,
-        val password: String
+        val password: String,
+        val origin: FileBrowserOrigin
     ) : MainScreen()
+}
+
+enum class FileBrowserOrigin {
+    NewConnection,
+    SavedProfile
 }

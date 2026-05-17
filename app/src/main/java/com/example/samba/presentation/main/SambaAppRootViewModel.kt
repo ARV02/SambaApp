@@ -25,20 +25,34 @@ class SambaAppRootViewModel : ViewModel() {
 
     fun openFileBrowser(
         connectionProfile: SmbConnectionProfile,
-        password: String
+        password: String,
+        origin: FileBrowserOrigin
     ) {
         currentScreen = MainScreen.FileBrowser(
             connectionProfile = connectionProfile,
-            password = password
+            password = password,
+            origin
         )
     }
 
     fun handleBack() {
-        currentScreen = when (currentScreen) {
+        currentScreen = when (val screen = currentScreen) {
             MainScreen.Profiles -> MainScreen.Profiles
             MainScreen.NewConnection -> MainScreen.Profiles
             MainScreen.Settings -> MainScreen.Profiles
-            is MainScreen.FileBrowser -> MainScreen.NewConnection
+            is MainScreen.FileBrowser -> {
+                when (screen.origin) {
+                    FileBrowserOrigin.NewConnection -> MainScreen.NewConnection
+                    FileBrowserOrigin.SavedProfile -> MainScreen.Profiles
+                }
+            }
+        }
+    }
+
+    fun handleFileBrowserBack(origin: FileBrowserOrigin) {
+        currentScreen = when (origin) {
+            FileBrowserOrigin.NewConnection -> MainScreen.NewConnection
+            FileBrowserOrigin.SavedProfile -> MainScreen.Profiles
         }
     }
 }
