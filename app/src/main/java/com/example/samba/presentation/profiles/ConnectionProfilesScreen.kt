@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storage
@@ -35,28 +36,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.samba.domain.model.ConnectionProfile
 import com.example.samba.presentation.components.SambaPrimaryButton
-
-private val demoProfiles = listOf(
-
-    ConnectionProfileUiModel(
-        name = "MacBook SMB",
-        host = "192.168.1.42",
-        shareName = "samba-test",
-        status = "Local network"
-    ),
-    ConnectionProfileUiModel(
-        name = "Fedora Lab",
-        host = "192.168.1.50",
-        shareName = "samba-test",
-        status = "Preset"
-    )
-)
 
 @Composable
 fun ConnectionProfilesScreen(
+    state: ConnectionProfilesUiState,
     onNewConnectionClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onProfileClick: (ConnectionProfile) -> Unit,
+    onDeleteProfileClick: (ConnectionProfile) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -88,15 +77,32 @@ fun ConnectionProfilesScreen(
                 fontWeight = FontWeight.SemiBold
             )
 
-            if (demoProfiles.isEmpty()) {
-                EmptyProfilesState(
-                    onNewConnectionClick = onNewConnectionClick
-                )
-            } else {
-                demoProfiles.forEach { profile ->
-                    ConnectionProfileCard(
-                        profile = profile
+            when {
+                state.isLoading -> {
+                    Text(
+                        text = "Loading profiles...",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+
+                state.isEmpty -> {
+                    EmptyProfilesState(
+                        onNewConnectionClick = onNewConnectionClick
+                    )
+                }
+
+                else -> {
+                    state.profiles.forEach { profile ->
+                        ConnectionProfileCard(
+                            profile = profile,
+                            onClick = {
+                                onProfileClick(profile)
+                            },
+                            onDeleteClick = {
+                                onDeleteProfileClick(profile)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -206,9 +212,12 @@ private fun HeroCard(
 
 @Composable
 private fun ConnectionProfileCard(
-    profile: ConnectionProfileUiModel
+    profile: ConnectionProfile,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -234,7 +243,7 @@ private fun ConnectionProfileCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = profile.name,
+                    text = profile.profileName,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
@@ -253,11 +262,15 @@ private fun ConnectionProfileCard(
                 )
             }
 
-            Text(
-                text = profile.status,
-                style = MaterialTheme.typography.labelSmall,
-                color = Color(0xFF38BDF8)
-            )
+            IconButton(
+                onClick = onDeleteClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete profile",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -298,12 +311,7 @@ private fun EmptyProfilesState(
             Text(
                 text = "Create your first SMB/Samba connection to browse shared folders.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            SambaPrimaryButton(
-                text = "Create Connection",
-                onClick = onNewConnectionClick
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

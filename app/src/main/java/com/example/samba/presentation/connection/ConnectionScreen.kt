@@ -293,6 +293,8 @@ fun ConnectionScreen(
 
         SecurityNoteCard()
 
+        Spacer(modifier = Modifier.height(32.dp))
+
         if (state.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
