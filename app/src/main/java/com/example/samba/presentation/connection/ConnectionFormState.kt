@@ -7,8 +7,9 @@ data class ConnectionFormState(
     val username: String = "",
     val password: String = "",
     val selectedPreset: ConnectionPreset = ConnectionPreset.Custom,
+    val rememberPassword: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 ) {
     val canSubmit: Boolean
         get() = profileName.isNotBlank()

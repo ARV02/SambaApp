@@ -3,13 +3,18 @@
     <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
-
         <item name="android:windowBackground">#070B1A</item>
         <item name="android:statusBarColor">#070B1A</item>
         <item name="android:navigationBarColor">#070B1A</item>
-
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Theme.SambaApp.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#070B1A</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_samba_splash</item>
+        <item name="windowSplashScreenIconBackgroundColor">#10172A</item>
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
     </style>
 
 </resources>

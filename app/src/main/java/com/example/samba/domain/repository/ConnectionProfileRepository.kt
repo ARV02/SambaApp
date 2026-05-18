@@ -14,7 +14,7 @@ interface ConnectionProfileRepository {
         host: String,
         shareName: String,
         username: String
-    )
+    ): Long
 
     suspend fun updateProfile(profile: ConnectionProfile)
 

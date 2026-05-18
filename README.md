@@ -326,15 +326,25 @@ This roadmap tracks the modernization process of SambaApp, from a legacy Java/XM
 
 ### v1.3.0 - Security improvements
 
-- [ ] Add secure credential storage
+- [x] Add Android Keystore-based credential storage
 
-- [ ] Avoid storing plain text passwords
+- [x] Add optional "Remember password securely" toggle
 
-- [ ] Clear passwords from memory when possible
+- [x] Avoid storing plain text passwords in Room
 
-- [ ] Add connection profile validation
+- [x] Load saved password when opening saved profiles
 
-- [ ] Add optional read-only mode
+- [x] Delete saved credentials when deleting profiles
+
+- [x] Clear passwords from memory when possible
+
+- [x] Add connection profile validation
+
+- [x] Add optional read-only mode
+
+- [x] Add branded splash screen
+
+- [x] Add branded launcher icon
 
 ---
 

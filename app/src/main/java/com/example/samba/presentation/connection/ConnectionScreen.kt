@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
@@ -36,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,32 +61,45 @@ import com.example.samba.presentation.components.SambaTextField
 @Composable
 fun ConnectionRoute(
     viewModel: ConnectionFormViewModel = viewModel(),
-    onConnectionReady: (connectionProfile: SmbConnectionProfile, password: String) -> Unit,
+    onConnectionReady: (
+        connectionProfile: SmbConnectionProfile,
+        password: String,
+        rememberPassword: Boolean
+            ) -> Unit,
     onBackClick: () -> Unit
 ) {
     val formState by viewModel.formState.observeAsState(ConnectionFormState())
     val uiState by viewModel.uiState.observeAsState(ConnectionFormUiState.Idle)
+    val validationError = (uiState as? ConnectionFormUiState.ValidationError)?.message
     LaunchedEffect(uiState) {
         val state = uiState
 
-        if (state is ConnectionFormUiState.Success) {
-            viewModel.resetForm()
+        when (state) {
+            is ConnectionFormUiState.Success -> {
+                viewModel.resetForm()
 
-            onConnectionReady(
-                state.connectionProfile,
-                state.password
-            )
+                onConnectionReady(
+                    state.connectionProfile,
+                    state.password,
+                    state.rememberPassword
+                )
+            }
+
+            is ConnectionFormUiState.ValidationError -> Unit
+            ConnectionFormUiState.Idle -> Unit
         }
     }
 
     ConnectionScreen(
         state = formState,
+        validationError = validationError,
         onPresetSelected = viewModel::onPresetSelected,
         onProfileNameChanged = viewModel::onProfileNameChanged,
         onHostChanged = viewModel::onHostChanged,
         onShareNameChanged = viewModel::onShareNameChanged,
         onUsernameChanged = viewModel::onUsernameChanged,
         onPasswordChanged = viewModel::onPasswordChanged,
+        onRememberPasswordChanged = viewModel::onRememberPasswordChanged,
         onConnectClick = viewModel::submit,
         onBackClick = {
             viewModel.resetForm()
@@ -97,12 +112,14 @@ fun ConnectionRoute(
 @Composable
 fun ConnectionScreen(
     state: ConnectionFormState,
+    validationError: String?,
     onPresetSelected: (ConnectionPreset) -> Unit,
     onProfileNameChanged: (String) -> Unit,
     onHostChanged: (String) -> Unit,
     onShareNameChanged: (String) -> Unit,
     onUsernameChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
+    onRememberPasswordChanged: (Boolean) -> Unit,
     onConnectClick: () -> Unit,
     onBackClick: () -> Unit,
     onErrorShown: () -> Unit,
@@ -242,6 +259,10 @@ fun ConnectionScreen(
                     }
                 }
             )
+            RememberPasswordRow(
+                checked = state.rememberPassword,
+                onCheckedChange = onRememberPasswordChanged
+            )
         }
 
         Row(
@@ -263,11 +284,11 @@ fun ConnectionScreen(
             )
         }
 
-        if (state.errorMessage != null) {
-            Text(
-                text = state.errorMessage,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
+        val errorMessage = validationError ?: state.errorMessage
+
+        if (errorMessage != null) {
+            ConnectionValidationErrorCard(
+                message = errorMessage
             )
         }
 
@@ -343,6 +364,42 @@ private fun PresetChips(
 }
 
 @Composable
+private fun ConnectionValidationErrorCard(
+    message: String
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF10172A)
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color(0xFFEF4444).copy(alpha = 0.55f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Error,
+                contentDescription = null,
+                tint = Color(0xFFEF4444)
+            )
+
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFFF8FAFC),
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Composable
 private fun SecurityNoteCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -370,6 +427,61 @@ private fun SecurityNoteCard() {
                 text = "Your credentials are used only to connect to the configured SMB server.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun RememberPasswordRow(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF10172A)
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color(0xFF1E293B)
+        ),
+        onClick = {
+            onCheckedChange(!checked)
+        }
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                tint = Color(0xFF38BDF8)
+            )
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Remember password securely",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Text(
+                    text = "Stored encrypted using Android Keystore.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
             )
         }
     }

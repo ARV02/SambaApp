@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SettingsScreen(
+    readOnlyMode: Boolean,
+    onReadOnlyModeChanged: (Boolean) -> Unit,
     onBackClick: () -> Unit
 ) {
     Column(
@@ -59,7 +61,8 @@ fun SettingsScreen(
                 SettingsToggleRow(
                     title = "Dark mode",
                     description = "Enabled for the modern demo UI.",
-                    checked = true
+                    checked = true,
+                    onCheckedChange = {}
                 )
             }
         )
@@ -70,7 +73,14 @@ fun SettingsScreen(
             items = {
                 SettingsInfoRow(
                     title = "Credentials",
-                    description = "Passwords are only used for the active SMB session. Secure credential storage is planned for a future milestone."
+                    description = "Passwords are stored encrypted only when Remember password securely is enabled. Room never stores plain text passwords."
+                )
+
+                SettingsToggleRow(
+                    title = "Read-only mode",
+                    description = "Disable create and delete actions while browsing SMB shares.",
+                    checked = readOnlyMode,
+                    onCheckedChange = onReadOnlyModeChanged
                 )
             }
         )
@@ -202,7 +212,8 @@ private fun SettingsInfoRow(
 private fun SettingsToggleRow(
     title: String,
     description: String,
-    checked: Boolean
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -228,7 +239,7 @@ private fun SettingsToggleRow(
 
         Switch(
             checked = checked,
-            onCheckedChange = null
+            onCheckedChange = onCheckedChange
         )
     }
 }

@@ -19,8 +19,11 @@ import com.hierynomus.smbj.share.DiskShare
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SmbFileRepositoryImpl : SmbFileRepository {
+@Singleton
+class SmbFileRepositoryImpl @Inject constructor() : SmbFileRepository {
 
     override suspend fun listFiles(
         connectionProfile: SmbConnectionProfile,

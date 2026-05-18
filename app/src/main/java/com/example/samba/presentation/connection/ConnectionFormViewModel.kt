@@ -3,9 +3,21 @@ package com.example.samba.presentation.connection
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.samba.domain.model.SmbFileResult
+import com.example.samba.domain.repository.SmbFileRepository
+import com.example.samba.domain.usecase.profile.ConnectionProfileUseCases
+import com.example.samba.domain.usecase.profile.ValidationResult
 import com.example.samba.model.SmbConnectionProfile
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.launch
 
-class ConnectionFormViewModel : ViewModel() {
+@HiltViewModel
+class ConnectionFormViewModel @Inject constructor(
+    private val connectionProfileUseCases: ConnectionProfileUseCases,
+    private val smbFileRepository: SmbFileRepository
+) : ViewModel() {
 
     private val _uiState = MutableLiveData<ConnectionFormUiState>(ConnectionFormUiState.Idle)
     val uiState: LiveData<ConnectionFormUiState> = _uiState
@@ -44,56 +56,66 @@ class ConnectionFormViewModel : ViewModel() {
     }
 
     fun submit() {
-        val state = _formState.value ?: ConnectionFormState()
-        validateAndCreateProfile(
-            profileName = state.profileName,
-            host = state.host,
-            shareName = state.shareName,
-            username = state.username,
-            password = state.password
+        val currentState = formState.value ?: ConnectionFormState()
+
+        val validationResult = connectionProfileUseCases.validateConnectionProfileUseCase(
+            profileName = currentState.profileName,
+            host = currentState.host,
+            shareName = currentState.shareName,
+            username = currentState.username
         )
-    }
 
-    fun validateAndCreateProfile(
-        profileName: String,
-        host: String,
-        shareName: String,
-        username: String,
-        password: String
-    ) {
-        val cleanProfileName = profileName.trim()
-        val cleanHost = host.trim()
-        val cleanShareName = shareName.trim()
-        val cleanUsername = username.trim()
-
-        if (cleanProfileName.isBlank()
-            || cleanHost.isBlank()
-            || cleanShareName.isBlank()
-            || cleanUsername.isBlank()
-            || password.isBlank()
-        ) {
-
+        if (validationResult is ValidationResult.Invalid) {
             _uiState.value = ConnectionFormUiState.ValidationError(
-                "All fields are required."
+                message = validationResult.message
+            )
+            return
+        }
+
+        if (currentState.password.isBlank()) {
+            _uiState.value = ConnectionFormUiState.ValidationError(
+                message = "Password is required."
             )
             return
         }
 
         val connectionProfile = SmbConnectionProfile(
-            name = cleanProfileName,
-            host = cleanHost,
-            shareName = cleanShareName,
-            username = cleanUsername
+            name = currentState.profileName.trim(),
+            host = currentState.host.trim(),
+            shareName = currentState.shareName.trim(),
+            username = currentState.username.trim()
         )
 
-        _uiState.value = ConnectionFormUiState.Success(
-            connectionProfile = connectionProfile,
-            password = password
-        )
-    }
-
-    fun resetState() {
+        _formState.value = currentState.copy(isLoading = true)
         _uiState.value = ConnectionFormUiState.Idle
+
+        viewModelScope.launch {
+            when (
+                val result = smbFileRepository.listFiles(
+                    connectionProfile = connectionProfile,
+                    password = currentState.password,
+                    path = ""
+                )
+            ) {
+                is SmbFileResult.Success -> {
+                    _formState.value = currentState.copy(isLoading = false)
+
+                    _uiState.value = ConnectionFormUiState.Success(
+                        connectionProfile = connectionProfile,
+                        password = currentState.password,
+                        rememberPassword = currentState.rememberPassword
+                    )
+                }
+
+                is SmbFileResult.Error -> {
+                    _formState.value = currentState.copy(isLoading = false)
+
+                    _uiState.value = ConnectionFormUiState.ValidationError(
+                        message = result.message
+                    )
+                }
+            }
+        }
     }
 
     fun clearError() {
@@ -109,5 +131,11 @@ class ConnectionFormViewModel : ViewModel() {
     fun resetForm() {
         _formState.value = ConnectionFormState()
         _uiState.value = ConnectionFormUiState.Idle
+    }
+
+    fun onRememberPasswordChanged(value: Boolean) {
+        updateState {
+            copy(rememberPassword = value)
+        }
     }
 }
