@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
@@ -69,22 +70,29 @@ fun ConnectionRoute(
 ) {
     val formState by viewModel.formState.observeAsState(ConnectionFormState())
     val uiState by viewModel.uiState.observeAsState(ConnectionFormUiState.Idle)
+    val validationError = (uiState as? ConnectionFormUiState.ValidationError)?.message
     LaunchedEffect(uiState) {
         val state = uiState
 
-        if (state is ConnectionFormUiState.Success) {
-            viewModel.resetForm()
+        when (state) {
+            is ConnectionFormUiState.Success -> {
+                viewModel.resetForm()
 
-            onConnectionReady(
-                state.connectionProfile,
-                state.password,
-                state.rememberPassword
-            )
+                onConnectionReady(
+                    state.connectionProfile,
+                    state.password,
+                    state.rememberPassword
+                )
+            }
+
+            is ConnectionFormUiState.ValidationError -> Unit
+            ConnectionFormUiState.Idle -> Unit
         }
     }
 
     ConnectionScreen(
         state = formState,
+        validationError = validationError,
         onPresetSelected = viewModel::onPresetSelected,
         onProfileNameChanged = viewModel::onProfileNameChanged,
         onHostChanged = viewModel::onHostChanged,
@@ -104,6 +112,7 @@ fun ConnectionRoute(
 @Composable
 fun ConnectionScreen(
     state: ConnectionFormState,
+    validationError: String?,
     onPresetSelected: (ConnectionPreset) -> Unit,
     onProfileNameChanged: (String) -> Unit,
     onHostChanged: (String) -> Unit,
@@ -275,11 +284,11 @@ fun ConnectionScreen(
             )
         }
 
-        if (state.errorMessage != null) {
-            Text(
-                text = state.errorMessage,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
+        val errorMessage = validationError ?: state.errorMessage
+
+        if (errorMessage != null) {
+            ConnectionValidationErrorCard(
+                message = errorMessage
             )
         }
 
@@ -349,6 +358,42 @@ private fun PresetChips(
                         MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
+            )
+        }
+    }
+}
+
+@Composable
+private fun ConnectionValidationErrorCard(
+    message: String
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF10172A)
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color(0xFFEF4444).copy(alpha = 0.55f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Error,
+                contentDescription = null,
+                tint = Color(0xFFEF4444)
+            )
+
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFFF8FAFC),
+                fontWeight = FontWeight.Medium
             )
         }
     }
