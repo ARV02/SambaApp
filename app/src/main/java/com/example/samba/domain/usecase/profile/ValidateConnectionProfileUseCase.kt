@@ -27,6 +27,10 @@ class ValidateConnectionProfileUseCase @Inject constructor() {
                 ValidationResult.Invalid("Enter only the host or IP address, without smb://.")
             }
 
+            host.contains("/") || host.contains("\\") -> {
+                ValidationResult.Invalid("Host should not include slashes or paths.")
+            }
+
             shareName.isBlank() -> {
                 ValidationResult.Invalid("Share name is required.")
             }

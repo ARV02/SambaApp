@@ -3,15 +3,20 @@ package com.example.samba.presentation.connection
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.samba.domain.model.SmbFileResult
+import com.example.samba.domain.repository.SmbFileRepository
 import com.example.samba.domain.usecase.profile.ConnectionProfileUseCases
 import com.example.samba.domain.usecase.profile.ValidationResult
 import com.example.samba.model.SmbConnectionProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ConnectionFormViewModel @Inject constructor(
-    private val connectionProfileUseCases: ConnectionProfileUseCases
+    private val connectionProfileUseCases: ConnectionProfileUseCases,
+    private val smbFileRepository: SmbFileRepository
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData<ConnectionFormUiState>(ConnectionFormUiState.Idle)
@@ -51,7 +56,7 @@ class ConnectionFormViewModel @Inject constructor(
     }
 
     fun submit() {
-        val currentState = _formState.value ?: ConnectionFormState()
+        val currentState = formState.value ?: ConnectionFormState()
 
         val validationResult = connectionProfileUseCases.validateConnectionProfileUseCase(
             profileName = currentState.profileName,
@@ -61,12 +66,16 @@ class ConnectionFormViewModel @Inject constructor(
         )
 
         if (validationResult is ValidationResult.Invalid) {
-            _uiState.value = ConnectionFormUiState.ValidationError(validationResult.message)
+            _uiState.value = ConnectionFormUiState.ValidationError(
+                message = validationResult.message
+            )
             return
         }
 
         if (currentState.password.isBlank()) {
-            _uiState.value = ConnectionFormUiState.ValidationError("Password is required.")
+            _uiState.value = ConnectionFormUiState.ValidationError(
+                message = "Password is required."
+            )
             return
         }
 
@@ -77,11 +86,36 @@ class ConnectionFormViewModel @Inject constructor(
             username = currentState.username.trim()
         )
 
-        _uiState.value = ConnectionFormUiState.Success(
-            connectionProfile = connectionProfile,
-            password = currentState.password,
-            rememberPassword = currentState.rememberPassword
-        )
+        _formState.value = currentState.copy(isLoading = true)
+        _uiState.value = ConnectionFormUiState.Idle
+
+        viewModelScope.launch {
+            when (
+                val result = smbFileRepository.listFiles(
+                    connectionProfile = connectionProfile,
+                    password = currentState.password,
+                    path = ""
+                )
+            ) {
+                is SmbFileResult.Success -> {
+                    _formState.value = currentState.copy(isLoading = false)
+
+                    _uiState.value = ConnectionFormUiState.Success(
+                        connectionProfile = connectionProfile,
+                        password = currentState.password,
+                        rememberPassword = currentState.rememberPassword
+                    )
+                }
+
+                is SmbFileResult.Error -> {
+                    _formState.value = currentState.copy(isLoading = false)
+
+                    _uiState.value = ConnectionFormUiState.ValidationError(
+                        message = result.message
+                    )
+                }
+            }
+        }
     }
 
     fun clearError() {
