@@ -23,6 +23,7 @@ import com.example.samba.presentation.filebrowser.FileBrowserRoute
 import com.example.samba.presentation.profiles.ConnectionProfilesScreen
 import com.example.samba.presentation.profiles.ConnectionProfilesViewModel
 import com.example.samba.presentation.settings.SettingsScreen
+import com.example.samba.presentation.settings.SettingsViewModel
 
 @Composable
 fun SambaAppRoot(
@@ -40,7 +41,7 @@ fun SambaAppRoot(
         viewModel.handleBack()
     }
 
-    when (currentScreen) {
+    when (val screen = currentScreen) {
         MainScreen.Profiles -> {
             val profilesViewModel: ConnectionProfilesViewModel = hiltViewModel()
             val profilesState by profilesViewModel.uiState.collectAsState()
@@ -54,7 +55,19 @@ fun SambaAppRoot(
                     viewModel.openSettings()
                 },
                 onProfileClick = { profile ->
-                    selectedProfileForPassword = profile
+                    val savedPassword = profilesViewModel.getSavedPassword(profile.id)
+
+                    if (savedPassword.isNullOrBlank()) {
+                        selectedProfileForPassword = profile
+                    } else {
+                        viewModel.openFileBrowser(
+                            connectionProfile = profile.toSmbConnectionProfile(),
+                            password = savedPassword,
+                            origin = FileBrowserOrigin.SavedProfile
+                        )
+
+                        profilesViewModel.updateLastConnectedAt(profile.id)
+                    }
                 },
                 onDeleteProfileClick = { profile ->
                     profilesViewModel.deleteProfile(profile.id)
@@ -64,12 +77,14 @@ fun SambaAppRoot(
 
         MainScreen.NewConnection -> {
             ConnectionRoute(
-                onConnectionReady = { connectionProfile, password ->
+                onConnectionReady = { connectionProfile, password, rememberPassword ->
                     profilesViewModel.saveProfile(
                         profileName = connectionProfile.name,
                         host = connectionProfile.host,
                         shareName = connectionProfile.shareName,
-                        username = connectionProfile.username
+                        username = connectionProfile.username,
+                        password = password,
+                        rememberPassword = rememberPassword
                     )
 
                     viewModel.openFileBrowser(
@@ -85,19 +100,28 @@ fun SambaAppRoot(
         }
 
         is MainScreen.FileBrowser -> {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val readOnlyMode by settingsViewModel.readOnlyMode.collectAsState()
+
             FileBrowserRoute(
-                connectionProfile = currentScreen.connectionProfile,
-                password = currentScreen.password,
+                connectionProfile = screen.connectionProfile,
+                password = screen.password,
+                readOnlyMode = readOnlyMode,
                 onBackClick = {
-                    viewModel.handleFileBrowserBack(currentScreen.origin)
+                    viewModel.handleFileBrowserBack(screen.origin)
                 }
             )
         }
 
         MainScreen.Settings -> {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val readOnlyMode by settingsViewModel.readOnlyMode.collectAsState()
+
             SettingsScreen(
+                readOnlyMode = readOnlyMode,
+                onReadOnlyModeChanged = settingsViewModel::onReadOnlyModeChanged,
                 onBackClick = {
-                    viewModel.openNewConnection()
+                    viewModel.openProfiles()
                 }
             )
         }

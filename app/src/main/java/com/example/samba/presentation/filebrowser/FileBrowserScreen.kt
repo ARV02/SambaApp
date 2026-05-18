@@ -71,6 +71,7 @@ import com.example.samba.presentation.components.SambaTextField
 fun FileBrowserRoute(
     connectionProfile: SmbConnectionProfile,
     password: String,
+    readOnlyMode: Boolean,
     viewModel: FileBrowserViewModel = viewModel(),
     onBackClick: () -> Unit
 ) {
@@ -90,6 +91,7 @@ fun FileBrowserRoute(
     FileBrowserScreen(
         state = state,
         shareName = connectionProfile.shareName,
+        readOnlyMode = readOnlyMode,
         onBackClick = {
             val handled = viewModel.goBackFolder()
             if (!handled) {
@@ -113,6 +115,7 @@ fun FileBrowserRoute(
 fun FileBrowserScreen(
     state: FileBrowserUiState,
     shareName: String,
+    readOnlyMode: Boolean,
     onBackClick: () -> Unit,
     onRefreshClick: () -> Unit,
     onFileClick: (SmbFileItem) -> Unit,
@@ -159,6 +162,11 @@ fun FileBrowserScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            if (readOnlyMode) {
+                ReadOnlyBanner()
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
             when {
                 state.isLoading -> {
                     LoadingState()
@@ -179,6 +187,7 @@ fun FileBrowserScreen(
                     FileList(
                         files = state.files,
                         onFileClick = onFileClick,
+                        showActions = !readOnlyMode,
                         onItemMenuClick = { item ->
                             dialogState = FileBrowserDialogState.FileActions(item)
                         }
@@ -187,21 +196,23 @@ fun FileBrowserScreen(
             }
         }
 
-        FloatingActionButton(
-            onClick = {
-                dialogState = FileBrowserDialogState.CreateMenu
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(24.dp),
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Create"
-            )
+        if (!readOnlyMode) {
+            FloatingActionButton(
+                onClick = {
+                    dialogState = FileBrowserDialogState.CreateMenu
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(24.dp),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create"
+                )
+            }
         }
 
         visibleActionMessage?.let { message ->
@@ -485,6 +496,7 @@ private fun FileBrowserTopBar(
 fun FileList(
     files: List<SmbFileItem>,
     onFileClick: (SmbFileItem) -> Unit,
+    showActions: Boolean,
     onItemMenuClick: (SmbFileItem) -> Unit
 ) {
     LazyColumn(
@@ -494,6 +506,7 @@ fun FileList(
         items(files) { item ->
             FileItemRow(
                 item = item,
+                showActions = showActions,
                 onClick = {
                     onFileClick(item)
                 },
@@ -509,6 +522,7 @@ fun FileList(
 @Composable
 fun FileItemRow(
     item: SmbFileItem,
+    showActions: Boolean,
     onClick: () -> Unit,
     onMenuClick: () -> Unit
 ) {
@@ -552,6 +566,7 @@ fun FileItemRow(
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium
                 )
+
                 Text(
                     text = if (item.isDirectory) {
                         "Folder"
@@ -563,14 +578,16 @@ fun FileItemRow(
                 )
             }
 
-            IconButton(
-                onClick = onMenuClick
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            if (showActions) {
+                IconButton(
+                    onClick = onMenuClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "File actions",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }
@@ -789,6 +806,28 @@ private fun SambaSnackBar(
                 fontWeight = FontWeight.SemiBold
             )
         }
+    }
+}
+
+@Composable
+private fun ReadOnlyBanner() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF10172A)
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color(0xFF1E293B)
+        )
+    ) {
+        Text(
+            text = "Read-only mode is enabled. Create and delete actions are disabled.",
+            modifier = Modifier.padding(14.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

@@ -12,8 +12,8 @@ class SaveConnectionProfileUseCase @Inject constructor(
         host: String,
         shareName: String,
         username: String
-    ) {
-        repository.saveProfile(
+    ): Long {
+        return repository.saveProfile(
             profileName = profileName.trim(),
             host = host.trim(),
             shareName = shareName.trim(),

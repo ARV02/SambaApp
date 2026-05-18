@@ -7,5 +7,6 @@ data class ConnectionProfileUseCases @Inject constructor(
     val saveProfile: SaveConnectionProfileUseCase,
     val updateProfile: UpdateConnectionProfileUseCase,
     val deleteProfile: DeleteConnectionProfileUseCase,
-    val updateLastConnectedAt: UpdateLastConnectedAtUseCase
+    val updateLastConnectedAt: UpdateLastConnectedAtUseCase,
+    val validateConnectionProfileUseCase: ValidateConnectionProfileUseCase
 )

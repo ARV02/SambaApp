@@ -29,7 +29,7 @@ class ConnectionProfileRepositoryImpl @Inject constructor(
         host: String,
         shareName: String,
         username: String
-    ) {
+    ): Long {
         val cleanProfileName = profileName.trim()
         val cleanHost = host.trim()
         val cleanShareName = shareName.trim()
@@ -42,7 +42,7 @@ class ConnectionProfileRepositoryImpl @Inject constructor(
             username = cleanUsername
         )
 
-        if (existingProfile != null) {
+        return if (existingProfile != null) {
             dao.updateProfile(
                 existingProfile.copy(
                     profileName = cleanProfileName,
@@ -50,6 +50,7 @@ class ConnectionProfileRepositoryImpl @Inject constructor(
                     lastConnectedAt = now
                 )
             )
+            existingProfile.id
         } else {
             dao.insertProfile(
                 ConnectionProfileEntity(

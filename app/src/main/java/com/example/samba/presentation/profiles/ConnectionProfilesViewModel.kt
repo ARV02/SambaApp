@@ -2,6 +2,7 @@ package com.example.samba.presentation.profiles
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.samba.domain.repository.CredentialStorageRepository
 import com.example.samba.domain.usecase.profile.ConnectionProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConnectionProfilesViewModel @Inject constructor(
-    private val profileUseCases: ConnectionProfileUseCases
+    private val profileUseCases: ConnectionProfileUseCases,
+    private val credentialStorageRepository: CredentialStorageRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ConnectionProfilesUiState())
@@ -37,6 +39,7 @@ class ConnectionProfilesViewModel @Inject constructor(
     fun deleteProfile(id: Long) {
         viewModelScope.launch {
             profileUseCases.deleteProfile(id)
+            credentialStorageRepository.deletePassword(id)
         }
     }
 
@@ -50,15 +53,31 @@ class ConnectionProfilesViewModel @Inject constructor(
         profileName: String,
         host: String,
         shareName: String,
-        username: String
+        username: String,
+        password: String,
+        rememberPassword: Boolean,
+        onSaved: (Long) -> Unit = {}
     ) {
         viewModelScope.launch {
-            profileUseCases.saveProfile(
+            val profileId = profileUseCases.saveProfile(
                 profileName = profileName,
                 host = host,
                 shareName = shareName,
                 username = username
             )
+
+            if (rememberPassword) {
+                credentialStorageRepository.savePassword(
+                    profileId = profileId,
+                    password = password
+                )
+            }
+
+            onSaved(profileId)
         }
+    }
+
+    fun getSavedPassword(profileId: Long): String? {
+        return credentialStorageRepository.getPassword(profileId)
     }
 }

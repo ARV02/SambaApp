@@ -7,7 +7,8 @@ sealed class ConnectionFormUiState {
     object Idle : ConnectionFormUiState()
     data class Success(
         val connectionProfile: SmbConnectionProfile,
-        val password: String
+        val password: String,
+        val rememberPassword: Boolean
     ) : ConnectionFormUiState()
     data class ValidationError(val message: String) : ConnectionFormUiState()
 }

@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +60,11 @@ import com.example.samba.presentation.components.SambaTextField
 @Composable
 fun ConnectionRoute(
     viewModel: ConnectionFormViewModel = viewModel(),
-    onConnectionReady: (connectionProfile: SmbConnectionProfile, password: String) -> Unit,
+    onConnectionReady: (
+        connectionProfile: SmbConnectionProfile,
+        password: String,
+        rememberPassword: Boolean
+            ) -> Unit,
     onBackClick: () -> Unit
 ) {
     val formState by viewModel.formState.observeAsState(ConnectionFormState())
@@ -72,7 +77,8 @@ fun ConnectionRoute(
 
             onConnectionReady(
                 state.connectionProfile,
-                state.password
+                state.password,
+                state.rememberPassword
             )
         }
     }
@@ -85,6 +91,7 @@ fun ConnectionRoute(
         onShareNameChanged = viewModel::onShareNameChanged,
         onUsernameChanged = viewModel::onUsernameChanged,
         onPasswordChanged = viewModel::onPasswordChanged,
+        onRememberPasswordChanged = viewModel::onRememberPasswordChanged,
         onConnectClick = viewModel::submit,
         onBackClick = {
             viewModel.resetForm()
@@ -103,6 +110,7 @@ fun ConnectionScreen(
     onShareNameChanged: (String) -> Unit,
     onUsernameChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
+    onRememberPasswordChanged: (Boolean) -> Unit,
     onConnectClick: () -> Unit,
     onBackClick: () -> Unit,
     onErrorShown: () -> Unit,
@@ -242,6 +250,10 @@ fun ConnectionScreen(
                     }
                 }
             )
+            RememberPasswordRow(
+                checked = state.rememberPassword,
+                onCheckedChange = onRememberPasswordChanged
+            )
         }
 
         Row(
@@ -370,6 +382,61 @@ private fun SecurityNoteCard() {
                 text = "Your credentials are used only to connect to the configured SMB server.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun RememberPasswordRow(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF10172A)
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = Color(0xFF1E293B)
+        ),
+        onClick = {
+            onCheckedChange(!checked)
+        }
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                tint = Color(0xFF38BDF8)
+            )
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Remember password securely",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Text(
+                    text = "Stored encrypted using Android Keystore.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange
             )
         }
     }
